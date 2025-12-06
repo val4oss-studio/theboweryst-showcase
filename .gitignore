@@ -39,3 +39,26 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database
+database/
+*.db
+*.db-shm
+*.db-wal
+
+# generated assets (Instagram sync)
+/public/posts/
+
+# Instagram scrape files (data, not source)
+src/scripts/sync/*.html
+
+# archives
+*.tar
+*.tar.gz
+*.zip
+
+# misc
+index.html
+
+# Claude Code local instructions (not for public repos)
+CLAUDE.md

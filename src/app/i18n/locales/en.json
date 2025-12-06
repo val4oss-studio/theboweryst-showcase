@@ -1,0 +1,61 @@
+{
+  "common": {
+    "siteName": "The Boweryst",
+    "tagline": "Fine Art Tattoo Studio"
+  },
+  "nav": {
+    "about": "About",
+    "artists": "Artists",
+    "gallery": "Gallery",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "THE BOWERY STREET",
+    "subtitle": "Professional tattoo studio in Lorient, France. Creating unique body art since August 2024.",
+    "instagram": "Follow Us",
+    "facebook": "Like Us",
+    "location": "Find Us"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "The Bowery Street opened its doors in August 2024, bringing a fresh wave of creativity to Lorient's tattoo scene. Our studio is home to three brilliant, dedicated, and passionate artists, each with their own unique specialties and artistic vision. From fine line delicacy to bold traditional work, our talented team transforms skin into living art. Our artists regularly participate in artistic events throughout Brittany and across France, constantly evolving their craft and bringing the latest trends and techniques to our studio. Whether you're looking for your first tattoo or adding to your collection, we're here to bring your vision to life with precision, creativity, and care."
+  },
+  "artists": {
+    "title": "Our Artists",
+    "lisa": {
+      "name": "Lisa",
+      "specialty": "Fine Line & Realism"
+    },
+    "manolita": {
+      "name": "Manolita",
+      "specialty": "Traditional & Neo-Traditional"
+    },
+    "missbunny": {
+      "name": "Miss Bunny",
+      "specialty": "Blackwork & Illustrative"
+    }
+  },
+  "gallery": {
+    "title": "Gallery",
+    "placeholder": "Tattoo Work"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "location": "Location & Hours",
+    "hours": "Hours",
+    "getInTouch": "Get in Touch",
+    "openMap": "Open Map",
+    "sendMessage": "Send us a message on Instagram",
+    "messageOnInstagram": "Message on Instagram",
+    "followOn": "Follow on"
+  },
+  "footer": {
+    "description": "Professional tattoo studio in Lorient, France. Creating unique body art since August 2024.",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved.",
+    "madeWith": "Made with",
+    "inLorient": "by val4oss"
+  }
+}

@@ -6,21 +6,43 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "tsx src/data/db/scripts/migrate.ts",
+    "db:seed": "tsx src/data/db/scripts/seed.ts",
+    "db:reset": "tsx src/data/db/scripts/reset.ts",
+    "artist:add": "tsx src/scripts/artist/add.ts",
+    "artist:list": "tsx src/scripts/artist/list.ts",
+    "artist:get": "tsx src/scripts/artist/get.ts",
+    "artist:remove": "tsx src/scripts/artist/remove.ts",
+    "post:add": "tsx src/scripts/post/add.ts",
+    "post:list": "tsx src/scripts/post/list.ts",
+    "post:get": "tsx src/scripts/post/get.ts",
+    "post:remove": "tsx src/scripts/post/remove.ts",
+    "shop:set": "tsx src/scripts/shop/set.ts",
+    "shop:update": "tsx src/scripts/shop/update.ts",
+    "shop:get": "tsx src/scripts/shop/get.ts",
+    "shop:remove": "tsx src/scripts/shop/remove.ts",
+    "instagram:sync": "tsx src/scripts/sync/syncInstagram.ts"
   },
   "dependencies": {
-    "next": "16.0.7",
+    "better-sqlite3": "^12.6.2",
+    "cheerio": "^1.2.0",
+    "lucide-react": "^0.556.0",
+    "next": "^16.1.6",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

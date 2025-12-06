@@ -1,0 +1,36 @@
+# Local deps
+node_modules/
+
+# local build output
+.next/
+
+# Git
+.git/
+.gitignore
+
+# Archives
+*.tar
+
+# Fichiers de dev
+.env*
+*.local
+
+# Local database
+database/
+*.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unnecessary files in production
+CLAUDE.md
+Containerfile
+README.md
+docs/
+index.html
+eslint.config.js
