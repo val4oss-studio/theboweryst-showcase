@@ -26,7 +26,7 @@ export function VideoBackground() {
         playsInline
         preload="auto"
       >
-        <source src="/theboweryst_background.mp4" type="video/mp4" />
+        <source src="/theboweryst_background_web.webm" type="video/webm" />
       </video>
       <div className="video-bg-overlay" />
     </div>

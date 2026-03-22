@@ -73,14 +73,14 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: color-mix(in srgb, var(--background) 85%, transparent);
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
   transition: background-color 0.3s ease;
 }
 
 /* Mobile : overlay légèrement plus opaque pour la lisibilité */
 @media (max-width: 768px) {
   .video-bg-overlay {
-    background-color: color-mix(in srgb, var(--background) 92%, transparent);
+    background-color: color-mix(in srgb, var(--background) 85%, transparent);
   }
 }
 
