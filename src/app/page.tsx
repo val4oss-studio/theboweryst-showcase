@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { cache } from "react";
-import { Navbar, Footer } from "@/app/components/layout";
+import { Navbar, Footer, SnapScroll } from "@/app/components/layout";
 import {
   HeroSection,
   AboutSection,
@@ -9,6 +9,7 @@ import {
   GallerySection,
   ContactSection,
 } from "@/app/components/sections";
+import { SECTION_IDS } from '@/config/sections';
 import { getAllArtists } from "@/domain/services/artistService";
 import { getShop } from "@/domain/services/shopService";
 
@@ -26,11 +27,12 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <HeroSection  shop={shop}/>
-      <AboutSection />
-      <ArtistsSection artists={artists}/>
-      <GallerySection artists={artists}/>
-      <ContactSection shop={shop} artists={artists}/>
+      <SnapScroll />
+      <HeroSection id={SECTION_IDS.home} shop={shop}/>
+      <AboutSection id={SECTION_IDS.about} />
+      <ArtistsSection id={SECTION_IDS.artists} artists={artists}/>
+      <GallerySection id={SECTION_IDS.gallery} artists={artists}/>
+      <ContactSection id={SECTION_IDS.contact} shop={shop} artists={artists}/>
       <Footer shop={shop} artists={artists}/>
     </>
   );

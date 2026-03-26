@@ -4,13 +4,13 @@ import type { ArtistEntity } from '@/domain/entities/artistEntity';
 import type { PostEntity } from '@/domain/entities/postEntity';
 import { GallerySectionClient } from './GallerySectionClient';
 
-interface GallerySectionProps {
+interface GalleryContentProps {
   artists: ArtistEntity[];
 }
 
 const  getCachedPostsByArtist = cache(getPostsByArtistId);
 
-async function GalleryContent({ artists }: GallerySectionProps) {
+async function GalleryContent({ artists }: GalleryContentProps) {
   const postsByArtistId: Record<number, PostEntity[]> = {};
 
   for (const artist of artists) {
@@ -45,9 +45,14 @@ function GallerySkeleton() {
   );
 }
 
-export function GallerySection({ artists }: GallerySectionProps) {
+interface GallerySectionProps {
+  id: string;
+  artists: ArtistEntity[];
+}
+
+export function GallerySection({ id, artists }: GallerySectionProps) {
   return (
-    <section id="gallery" className="section">
+    <section id={id} className="section">
       <Suspense fallback={<GallerySkeleton />}>
         <GalleryContent artists={artists} />
       </Suspense>

@@ -6,10 +6,11 @@ import { ArrowDown, Instagram, Facebook, MapPin } from "lucide-react";
 import type { ShopEntity } from "@/domain/entities/shopEntity";
 
 interface HeroSectionProps {
+  id: string;
   shop: ShopEntity;
 }
 
-export function HeroSection({shop}: HeroSectionProps) {
+export function HeroSection({id, shop}: HeroSectionProps) {
   const { t, locale } = useI18n();
   const [isScrolled, setIsScrolled] = useState(false);
   
@@ -40,7 +41,7 @@ export function HeroSection({shop}: HeroSectionProps) {
   };
 
   return (
-    <section id="home" className="section">
+    <section id={id} className="section">
       <div className="section-header text-center">
         <h1 className="page-title">{shop.name}</h1>
         <p className="page-subtitle mt-4">{shop.description[locale]}</p>

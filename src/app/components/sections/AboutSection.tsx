@@ -2,11 +2,15 @@
 
 import { useI18n } from "@/app/i18n/provider";
 
-export function AboutSection() {
+interface AboutSectionProps {
+  id: string;
+}
+
+export function AboutSection({id}: AboutSectionProps) {
   const { t } = useI18n();
 
   return (
-    <section id="about" className="section">
+    <section id={id} className="section">
       <div className="section-container-narrow">
         <div className="section-header">
           <h2 className="section-title">{t.about.title}</h2>

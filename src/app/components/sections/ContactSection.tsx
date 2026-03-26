@@ -7,11 +7,12 @@ import type {ArtistEntity} from "@/domain/entities/artistEntity";
 import { getArtistInstagramUrl } from "@/domain/entities/artistEntity";
 
 interface ContactSectionProps {
+  id: string;
   shop: ShopEntity;
   artists: ArtistEntity[];
 }
 
-export function ContactSection({ shop, artists }: ContactSectionProps) {
+export function ContactSection({ id, shop, artists }: ContactSectionProps) {
   const { t, locale } = useI18n();
 
   const handleClick = (url: string) => {
@@ -19,7 +20,7 @@ export function ContactSection({ shop, artists }: ContactSectionProps) {
   };
 
   return (
-    <section id="contact" className="section">
+    <section id={id} className="section">
       <div className="section-container">
         <div className="section-header">
           <h2 className="section-title">{t.contact.title}</h2>

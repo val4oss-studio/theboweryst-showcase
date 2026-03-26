@@ -5,14 +5,15 @@ import { useI18n } from "@/app/i18n/provider";
 import { ArtistEntity } from "@/domain/entities/artistEntity";
 
 interface ArtistsSectionProps {
+  id: string;
   artists: ArtistEntity[];
 }
 
-export function ArtistsSection({ artists }: ArtistsSectionProps) {
+export function ArtistsSection({ id, artists }: ArtistsSectionProps) {
   const { t } = useI18n();
 
   return (
-    <section id="artists" className="section">
+    <section id={id} className="section">
       <div className="section-container">
         <div className="section-header">
           <h2 className="section-title">{t.artists.title}</h2>
