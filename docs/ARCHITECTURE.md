@@ -65,12 +65,18 @@ src/
 │   └── site.ts                       # Site metadata (name, URL, socials)
 │
 ├── app/                              # Next.js App Router (UI layer)
-│   ├── layout.tsx                    #   Root layout (providers, fonts, metadata, SEO)
-│   ├── page.tsx                      #   Home -- composition only, zero logic
+│   ├── layout.tsx                    #   Root shell (fonts, global scripts, JSON-LD SEO)
+│   ├── page.tsx                      #   Redirect → /{defaultLocale}
 │   ├── not-found.tsx
 │   ├── error.tsx                     #   Error boundary ("use client")
 │   ├── loading.tsx
 │   ├── globals.css
+│   │
+│   ├── [locale]/                     #   Routes localisées (/fr, /en, …)
+│   │   ├── layout.tsx                #     I18nProvider + metadata locale (hreflang, title, canonical)
+│   │   ├── page.tsx                  #     Page principale — composition uniquement, zéro logique
+│   │   └── [feature]/
+│   │       └── page.tsx              #     Pages secondaires (ex: /fr/artists, /en/artists)
 │   │
 │   ├── api/                          #   Route Handlers (REST)
 │   │   └── [entity]/
@@ -84,12 +90,13 @@ src/
 │   │   ├── ui/                       #   Button, Card, Modal, Input... + index.ts
 │   │   └── forms/                    #   [Entity]Form.tsx + index.ts
 │   │
-│   ├── hooks/                        #   useTheme, useLocale, useScrollPosition...
-│   ├── providers/                    #   ThemeProvider, I18nProvider
+│   ├── hooks/                        #   useTheme, useLocale, useScrollPosition…
+│   ├── providers/                    #   ThemeProvider (I18nProvider est dans [locale]/layout.tsx)
 │   └── i18n/
-│       ├── config.ts
-│       ├── translations.ts
-│       └── locales/                  #   en.json, fr.json...
+│       ├── config.ts                 #   Noms affichés et drapeaux par locale
+│       ├── provider.tsx              #   I18nProvider — reçoit initialLocale depuis l'URL
+│       ├── translations.ts           #   getTranslations(locale)
+│       └── locales/                  #   en.json, fr.json…
 │
 ├── middleware.ts                      # Locale redirect, security headers
 │
@@ -358,26 +365,38 @@ export function parseLocalizedText(json: string | null): LocalizedText {
 
 #### Sélection dans les composants
 
+La locale est fournie par l'URL (`/fr`, `/en`), passée à `I18nProvider` via `[locale]/layout.tsx`,
+et accessible dans tous les composants enfants via `useI18n()` — sans aucun accès à `localStorage`.
+
 ```tsx
-// ✅ Dans un Client Component avec useI18n()
+// ✅ Dans n'importe quel Client Component
 const { locale } = useI18n();
 <p>{artist.bio[locale]}</p>
 
+// ✅ Dans un Server Component (reçoit locale depuis params)
+const { locale } = await params;
+<p>{artist.bio[locale]}</p>
+
 // ❌ Anti-pattern : ne jamais filtrer la locale dans le repository ou le service
-findAll(locale: string) // INTERDIT
+findAll(locale: string) // INTERDIT — la sélection appartient à la couche UI
 ```
 
 #### Ajouter une nouvelle locale
 
-1. `src/config/locales.ts` → ajouter la locale au type et au tableau
-2. `src/app/i18n/config.ts` → ajouter nom et drapeau
-3. `src/app/i18n/locales/` → créer le fichier JSON de traductions UI
+1. `src/config/locales.ts` → ajouter la locale au type et au tableau `locales[]`
+2. `src/app/i18n/config.ts` → ajouter nom affiché et drapeau
+3. `src/app/i18n/locales/` → créer le fichier JSON de traductions UI (`es.json`, etc.)
 4. Alimenter les traductions DB via les scripts CLI (`npm run artists:update`, etc.)
-5. **Aucune migration SQL nécessaire**
+5. `generateStaticParams` dans `[locale]/layout.tsx` et `[locale]/page.tsx` génère automatiquement
+   la nouvelle route — **aucune autre modification de routing nécessaire**
+6. **Aucune migration SQL nécessaire**
 
 ### SEO
 
-Centralized in `layout.tsx`: Metadata API, JSON-LD structured data, canonical/hrefLang links. Site constants from `config/site.ts`. Security headers + image optimization in `next.config.ts`.
+- **Root `layout.tsx`** : JSON-LD structured data (TattooParlor, LocalBusiness…), fonts, scripts globaux
+- **`[locale]/layout.tsx`** : Metadata API locale (title, description, hreflang, canonical) via `generateMetadata`
+- Les `alternates.languages` dans `generateMetadata` génèrent automatiquement les balises hreflang correctes
+- Site constants dans `config/site.ts`. Security headers + image optimization dans `next.config.ts`
 
 ---
 

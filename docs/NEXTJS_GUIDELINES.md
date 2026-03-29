@@ -11,9 +11,10 @@
 4. [Data Fetching](#data-fetching)
 5. [Server Actions](#server-actions)
 6. [Routing et Navigation](#routing-et-navigation)
-7. [Metadata et SEO](#metadata-et-seo)
-8. [Performance](#performance)
-9. [Patterns Anti-Patterns](#patterns-anti-patterns)
+7. [Internationalisation (i18n)](#internationalisation-i18n)
+8. [Metadata et SEO](#metadata-et-seo)
+9. [Performance](#performance)
+10. [Patterns Anti-Patterns](#patterns-anti-patterns)
 
 ---
 
@@ -104,29 +105,24 @@ export default config;
 ### Structure Obligatoire
 
 ```
-✅ BON - App Router (OBLIGATOIRE)
-src/ui/app/
-├── layout.tsx              # Root layout
-├── page.tsx                # Home page
+✅ BON - App Router avec i18n URL-based (OBLIGATOIRE)
+src/app/
+├── layout.tsx              # Root shell (fonts, JSON-LD global)
+├── page.tsx                # Redirect → /{defaultLocale}
 ├── error.tsx               # Error boundary
-├── loading.tsx             # Loading UI
 ├── not-found.tsx           # 404 page
 │
-├── (marketing)/            # Route groups (pas dans URL)
-│   ├── about/
-│   │   └── page.tsx
-│   └── contact/
+├── [locale]/               # Routes localisées (/fr, /en, ...)
+│   ├── layout.tsx          # I18nProvider + metadata locale (hreflang, canonical)
+│   ├── page.tsx            # Page principale — composition uniquement
+│   └── artists/            # Pages secondaires → /fr/artists, /en/artists
 │       └── page.tsx
 │
-├── dashboard/
-│   ├── layout.tsx          # Layout spécifique
-│   ├── page.tsx
-│   └── settings/
-│       └── page.tsx
-│
-└── api/                    # API routes
+└── api/                    # API routes (non localisées)
     └── users/
         └── route.ts
+
+src/middleware.ts            # ← à la racine de src/ (pas dans app/)
 
 ❌ INTERDIT - Pages Router
 pages/
@@ -139,7 +135,7 @@ pages/
 ### Layouts
 
 ```typescript
-// ✅ src/ui/app/layout.tsx - Root Layout
+// ✅ src/app/layout.tsx - Root Shell (fonts, JSON-LD global, scripts)
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -160,13 +156,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    // suppressHydrationWarning : le lang est mis à jour dynamiquement par [locale]/layout.tsx
+    <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         {children}
       </body>
     </html>
   );
 }
+
+// ✅ src/app/[locale]/layout.tsx - Layout localisé (I18nProvider + metadata)
+// Voir section Internationalisation (i18n) pour le code complet
 
 // ✅ Layout imbriqué
 // src/ui/app/dashboard/layout.tsx
@@ -777,6 +777,198 @@ export default function PhotoModal({ params }: { params: Promise<{ id: string }>
   // Modal qui intercepte /photo/[id]
   return <Modal>...</Modal>;
 }
+```
+
+---
+
+## Internationalisation (i18n)
+
+### Principe : locale dans l'URL
+
+La locale fait partie de l'URL (`/fr`, `/en`). Chaque version linguistique est une route distincte,
+indexée séparément par Google. Pas de `localStorage`, pas de cookies — la locale est une donnée serveur.
+
+```
+/          → redirect vers /{defaultLocale}  (middleware ou page.tsx)
+/fr        → version française (indexée par Google)
+/en        → version anglaise (indexée par Google)
+/fr/artists → page artistes en français
+/en/artists → page artistes en anglais
+```
+
+### Structure des fichiers
+
+```
+src/
+├── app/
+│   ├── page.tsx                    # redirect('/fr')
+│   ├── [locale]/
+│   │   ├── layout.tsx              # I18nProvider + generateMetadata
+│   │   └── page.tsx                # page principale
+│   └── i18n/
+│       ├── provider.tsx            # Context — reçoit initialLocale en prop
+│       └── locales/
+│           ├── fr.json
+│           └── en.json
+├── config/
+│   └── locales.ts                  # Source de vérité unique (type, tableau, defaultLocale)
+└── middleware.ts                   # Détection langue navigateur → redirect automatique
+```
+
+### `[locale]/layout.tsx` — layout localisé
+
+```typescript
+import type { Locale } from '@/config/locales'
+import { locales } from '@/config/locales'
+import { I18nProvider } from '@/app/i18n/provider'
+import type { Metadata } from 'next'
+
+interface LocaleLayoutProps {
+  children: React.ReactNode
+  params: Promise<{ locale: Locale }>
+}
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ locale: Locale }> }
+): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    alternates: {
+      canonical: `https://example.com/${locale}`,
+      languages: {
+        fr: 'https://example.com/fr',
+        en: 'https://example.com/en',
+        'x-default': 'https://example.com/fr',
+      },
+    },
+  }
+}
+
+// Génère /fr et /en au build — ajouter une locale dans locales[] suffit
+export function generateStaticParams() {
+  return locales.map(locale => ({ locale }))
+}
+
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params
+  return (
+    <I18nProvider initialLocale={locale}>
+      {children}
+    </I18nProvider>
+  )
+}
+```
+
+### `I18nProvider` — locale depuis l'URL, changement par navigation
+
+```typescript
+'use client'
+
+import { createContext, useContext, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import type { Locale } from '@/config/locales'
+import { getTranslations, type Translations } from './translations'
+
+interface I18nContextType {
+  locale: Locale
+  setLocale: (locale: Locale) => void
+  t: Translations
+}
+
+const I18nContext = createContext<I18nContextType | undefined>(undefined)
+
+interface I18nProviderProps {
+  children: React.ReactNode
+  initialLocale: Locale  // ← vient de l'URL, jamais de localStorage
+}
+
+export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
+  const router = useRouter()
+  const [locale] = useState<Locale>(initialLocale)
+  const [translations] = useState<Translations>(getTranslations(initialLocale))
+
+  // Changer de langue = naviguer vers la nouvelle URL
+  const setLocale = (newLocale: Locale) => {
+    if (newLocale !== locale) router.push(`/${newLocale}`)
+  }
+
+  return (
+    <I18nContext.Provider value={{ locale, setLocale, t: translations }}>
+      {children}
+    </I18nContext.Provider>
+  )
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext)
+  if (!context) throw new Error('useI18n must be used within an I18nProvider')
+  return context
+}
+```
+
+### Middleware — détection automatique de la langue
+
+```typescript
+// src/middleware.ts  (à la racine de src/, PAS dans app/)
+import { NextRequest, NextResponse } from 'next/server'
+import { locales, defaultLocale } from '@/config/locales'
+
+export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // Laisser passer les assets et API
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next()
+  }
+
+  // Déjà sur une route avec locale → laisser passer
+  const hasLocale = locales.some(
+    l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
+  )
+  if (hasLocale) return NextResponse.next()
+
+  // Détecter la langue du navigateur, fallback sur defaultLocale
+  const acceptLanguage = request.headers.get('accept-language') ?? ''
+  const preferredLocale =
+    locales.find(l => acceptLanguage.toLowerCase().includes(l)) ?? defaultLocale
+
+  return NextResponse.redirect(new URL(`/${preferredLocale}${pathname}`, request.url))
+}
+
+export const config = {
+  matcher: ['/((?!_next|api|.*\\..*).*)'],
+}
+```
+
+### Ajouter une nouvelle page localisée
+
+Créer simplement le fichier dans `[locale]/` — routing et SEO suivent automatiquement :
+
+```
+src/app/[locale]/artists/page.tsx  →  /fr/artists  et  /en/artists
+```
+
+`generateStaticParams` dans le layout parent génère toutes les combinaisons au build.
+Aucune modification du middleware ou du routing nécessaire.
+
+### ❌ Anti-patterns i18n
+
+```typescript
+// ❌ Locale dans localStorage
+useEffect(() => {
+  const locale = localStorage.getItem('locale') // Ne jamais faire ça
+}, [])
+
+// ❌ Une seule URL pour toutes les langues
+// → Google ne peut pas indexer les deux versions séparément
+// → hreflang sans routes distinctes = erreur SEO
+
+// ❌ Passer locale en prop à travers tous les composants
+<Section locale={locale} />  // Utiliser useI18n() à la place dans les Client Components
 ```
 
 ---
