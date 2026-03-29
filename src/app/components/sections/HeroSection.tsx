@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useI18n } from "@/app/i18n/provider";
-import { ArrowDown, Instagram, Facebook, MapPin } from "lucide-react";
+import { ArrowDown, MapPin } from "lucide-react";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 import type { ShopEntity } from "@/domain/entities/shopEntity";
 
 interface HeroSectionProps {
@@ -28,18 +29,6 @@ export function HeroSection({id, shop}: HeroSectionProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const openInstagram = () => {
-    window.open(shop.instagramUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const openFacebook = () => {
-    window.open(shop.facebookUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const openMap = () => {
-    window.open(shop.mapUrl, '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <section id={id} className="section">
       <div className="section-header text-center">
@@ -48,22 +37,35 @@ export function HeroSection({id, shop}: HeroSectionProps) {
         
         {/* Social Buttons */}
         <div className="hero-buttons">
-          <button onClick={openInstagram}
-                  className="hero-btn hero-btn-instagram"
+          <a
+            href={shop.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hero-btn hero-btn-instagram"
           >
-            <Instagram className="hero-btn-icon" />
+            <FaInstagram className="hero-btn-icon" />
             <span>{t.hero.instagram}</span>
-          </button>
+          </a>
 
-          <button onClick={openFacebook} className="hero-btn hero-btn-facebook">
-            <Facebook className="hero-btn-icon" />
+          <a
+            href={shop.facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hero-btn hero-btn-facebook"
+          >
+            <FaFacebook className="hero-btn-icon" />
             <span>{t.hero.facebook}</span>
-          </button>
+          </a>
 
-          <button onClick={openMap} className="hero-btn hero-btn-location">
+          <a
+            href={shop.mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hero-btn hero-btn-location"
+          >
             <MapPin className="hero-btn-icon" />
             <span>{t.hero.location}</span>
-          </button>
+          </a>
         </div>
       </div>
 

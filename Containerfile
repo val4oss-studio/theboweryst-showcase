@@ -19,12 +19,18 @@ FROM docker.io/library/node:22-slim AS builder
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_DIR=/app/database
 
 # Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the Next.js application
+
+# Run database migrations and seed data (remove and add 
+# export const dynamic = 'force-dynamic' in [locale]/page.tsx
+RUN npm run db:migrate
+RUN npm run db:seed
 RUN npm run build
 
 # Complie scripts admin in JS

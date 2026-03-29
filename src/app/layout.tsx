@@ -1,9 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-import { I18nProvider } from "./i18n/provider";
 import { VideoBackground } from "@/app/components/layout/VideoBackground";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  ],
+};
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -110,26 +117,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
-        <link rel="canonical" href="https://theboweryst.fr" />
-        <link rel="alternate" hrefLang="fr" href="https://theboweryst.fr" />
-        <link rel="alternate" hrefLang="en" href="https://theboweryst.fr/en" />
-        <link rel="alternate" hrefLang="x-default" href="https://theboweryst.fr" />
-        
         <Script id="theme-script" strategy="beforeInteractive">
           {`
             (function() {
               const theme = localStorage.getItem('theme') || 'dark';
               document.documentElement.setAttribute('data-theme', theme);
-            })();
-          `}
-        </Script>
-        <Script id="locale-script" strategy="beforeInteractive">
-          {`
-            (function() {
-              const locale = localStorage.getItem('locale') || 'fr';
-              document.documentElement.setAttribute('lang', locale);
             })();
           `}
         </Script>
@@ -148,8 +142,6 @@ export default function RootLayout({
               url: "https://theboweryst.fr",
               logo: "https://theboweryst.fr/logo.jpg",
               image: "https://theboweryst.fr/logo.jpg",
-              telephone: "",
-              email: "",
               address: {
                 "@type": "PostalAddress",
                 streetAddress: "6 Rue de Turenne",
@@ -247,31 +239,31 @@ export default function RootLayout({
                   "@type": "ListItem",
                   position: 1,
                   name: "Accueil",
-                  item: "https://theboweryst.fr"
+                  item: "https://theboweryst.fr/fr"
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "À Propos",
-                  item: "https://theboweryst.fr#about"
+                  item: "https://theboweryst.fr/fr#about"
                 },
                 {
                   "@type": "ListItem",
                   position: 3,
                   name: "Artistes",
-                  item: "https://theboweryst.fr#artists"
+                  item: "https://theboweryst.fr/fr#artists"
                 },
                 {
                   "@type": "ListItem",
                   position: 4,
                   name: "Galerie",
-                  item: "https://theboweryst.fr#gallery"
+                  item: "https://theboweryst.fr/fr#gallery"
                 },
                 {
                   "@type": "ListItem",
                   position: 5,
                   name: "Contact",
-                  item: "https://theboweryst.fr#contact"
+                  item: "https://theboweryst.fr/fr#contact"
                 }
               ]
             })
@@ -311,7 +303,7 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <VideoBackground />
-        <I18nProvider>{children}</I18nProvider>
+        {children}
       </body>
     </html>
   );

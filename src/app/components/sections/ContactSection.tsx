@@ -1,7 +1,8 @@
 "use client";
 
 import { useI18n } from "@/app/i18n/provider";
-import { MapPin, Instagram, Facebook } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { FaInstagram, FaFacebook } from "react-icons/fa";
 import type { ShopEntity } from "@/domain/entities/shopEntity";
 import type {ArtistEntity} from "@/domain/entities/artistEntity";
 import { getArtistInstagramUrl } from "@/domain/entities/artistEntity";
@@ -14,10 +15,6 @@ interface ContactSectionProps {
 
 export function ContactSection({ id, shop, artists }: ContactSectionProps) {
   const { t, locale } = useI18n();
-
-  const handleClick = (url: string) => {
-    window.open(url, "_blank");
-  };
 
   return (
     <section id={id} className="section">
@@ -45,27 +42,33 @@ export function ContactSection({ id, shop, artists }: ContactSectionProps) {
               {shop.scheduleWeekend[locale]}
             </p>
             <div className="contact-shop-actions">
-              <button
-                onClick={() => handleClick(shop.instagramUrl)}
+              <a
+                href={shop.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hero-btn hero-btn-instagram"
               >
-                <Instagram className="hero-btn-icon" />
+                <FaInstagram className="hero-btn-icon" />
                 <span>@{shop.instagramUsername}</span>
-              </button>
-              <button
-                onClick={() => handleClick(shop.facebookUrl)}
+              </a>
+              <a
+                href={shop.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hero-btn hero-btn-facebook"
               >
-                <Facebook className="hero-btn-icon" />
+                <FaFacebook className="hero-btn-icon" />
                 <span>{shop.facebookUsername}</span>
-              </button>
-              <button
-                onClick={() => handleClick(shop.mapUrl)}
+              </a>
+              <a
+                href={shop.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hero-btn"
               >
                 <MapPin className="hero-btn-icon" />
                 <span>{t.contact.openMap}</span>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -75,20 +78,22 @@ export function ContactSection({ id, shop, artists }: ContactSectionProps) {
               const igUrl = getArtistInstagramUrl(artist);
               if (!igUrl) return null;
               return (
-                <div
+                <a
                   key={artist.username}
+                  href={igUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="contact-card contact-card-clickable"
-                  onClick={() => handleClick(igUrl)}
                 >
                   <div className="contact-card-icon">
-                    <Instagram size={32} />
+                    <FaInstagram size={32} />
                   </div>
                   <h3 className="contact-card-title">{artist.username}</h3>
                   <p className="contact-card-text">@{artist.instagramName}</p>
                   <div className="contact-card-action">
                     {t.contact.followOn} Instagram
                   </div>
-                </div>
+                </a>
               );
             })}
           </div>

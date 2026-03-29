@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Locale } from '@/config/locales'
-import { defaultLocale } from "@/config/locales";
 import { getTranslations, type Translations } from "./translations";
 
 interface I18nContextType {
@@ -13,27 +13,23 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [translations, setTranslations] = useState<Translations>(
-    getTranslations(defaultLocale)
+interface I18nProviderProps {
+  children: React.ReactNode;
+  initialLocale: Locale;
+}
+
+export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
+  const router = useRouter();
+  const [locale] = useState<Locale>(initialLocale);
+  const [translations] = useState<Translations>(
+    getTranslations(initialLocale)
   );
 
-  useEffect(() => {
-    const savedLocale = localStorage.getItem("locale") as Locale | null;
-    if (savedLocale && (savedLocale === "en" || savedLocale === "fr")) {
-      setLocaleState(savedLocale);
-      setTranslations(getTranslations(savedLocale));
-      document.documentElement.setAttribute("lang", savedLocale);
-    }
-  }, []);
-
   const setLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale);
-    setTranslations(getTranslations(newLocale));
-    localStorage.setItem("locale", newLocale);
-    document.documentElement.setAttribute("lang", newLocale);
-  };
+    if (newLocale !== initialLocale) {
+      router.push(`/${newLocale}`);
+    }
+  }
 
   return (
     <I18nContext.Provider value={{ locale, setLocale, t: translations }}>
