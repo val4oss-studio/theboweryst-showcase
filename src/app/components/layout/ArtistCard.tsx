@@ -32,7 +32,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
       <div className="card-image-wrapper">
         <Image
           src={imageUrl}
-          alt={artist.username}
+          alt={`${artist.username} - Artiste tatoueur au The Bowery Street, Lorient`}
           width={400}
           height={400}
           className="card-image"
