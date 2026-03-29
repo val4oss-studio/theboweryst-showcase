@@ -1,7 +1,8 @@
 'use client';
 
 import { useI18n } from '@/app/i18n/provider';
-import { Instagram, Facebook, MapPin, Clock } from 'lucide-react';
+import { FaInstagram, FaFacebook } from 'react-icons/fa';
+import { MapPin, Clock } from 'lucide-react';
 import Image from 'next/image';
 import type { ShopEntity } from '@/domain/entities/shopEntity';
 import type { ArtistEntity } from '@/domain/entities/artistEntity';
@@ -93,7 +94,7 @@ export function Footer({ shop, artists }: FooterProps) {
                 className="footer-social-link"
                 aria-label={shop.name}
               >
-                <Instagram size={20} />
+                <FaInstagram size={20} />
                 <span>{shop.name}</span>
               </a>
             </li>
@@ -106,7 +107,7 @@ export function Footer({ shop, artists }: FooterProps) {
                 className="footer-social-link"
                 aria-label={shop.facebookUsername}
               >
-                <Facebook size={20} />
+                <FaFacebook size={20} />
                 <span>{shop.facebookUsername}</span>
               </a>
             </li>
@@ -123,7 +124,7 @@ export function Footer({ shop, artists }: FooterProps) {
                     className="footer-social-link"
                     aria-label={artist.username}
                   >
-                    <Instagram size={20} />
+                    <FaInstagram size={20} />
                     <span>{artist.username}</span>
                   </a>
                 </li>
