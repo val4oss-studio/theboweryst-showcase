@@ -41,7 +41,7 @@ const seedArtists = [
 const seedShop = {
   name: "The Bowery Street",
   description: {
-    fr: "Studio de tatouage professionnel à Lorient, France. Trois artistes passionnés créent des œuvres d'art corporel uniques depuis août 2024.",
+    fr: "Studio de tatouage professionnel à Lorient, France. Trois artistes passionnées créent des œuvres d'art corporel uniques depuis août 2024.",
     en: "Professional tattoo studio in Lorient, France. Three passionate artists creating unique body art since August 2024.",
   },
   addressStreet:     "6 Rue de Turenne",
