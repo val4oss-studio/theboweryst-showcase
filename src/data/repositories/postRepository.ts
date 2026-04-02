@@ -44,8 +44,26 @@ export class PostRepository {
    * no post with the given artist_id exists.
    */
   findByArtistId(artist_id: number): PostEntity[] {
-    const stmt = this.db.prepare('SELECT * FROM posts WHERE artist_id = ?');
+    const stmt = this.db.prepare(
+      'SELECT * FROM posts WHERE artist_id = ? ORDER BY id DESC'
+    );
     return toPostEntities(stmt.all(artist_id) as Post[]);
+  }
+
+  /**
+   * Find post urls by artists id.
+   *
+   * @param {number} artist_id - The unique identifier of the artist to find.
+   * @returns {string[]} An array of post urls if found, or an empty array if
+   * no post with the given artist_id exists.
+   */
+  findPostUrlsByArtistId(artist_id: number): string[] {
+    const stmt = this.db.prepare(
+      'SELECT post_url FROM posts WHERE artist_id = ?'
+    );
+    return (
+      stmt.all(artist_id) as { post_url: string }[]
+    ).map((row) => row.post_url);
   }
 
   /**
@@ -127,5 +145,24 @@ export class PostRepository {
   deleteByArtistId(artistId: number): boolean {
     const stmt = this.db.prepare('DELETE FROM posts WHERE artist_id = ?');
     return stmt.run(artistId).changes > 0;
+  }
+
+  /**
+   * Deletes the oldest posts beyond a specified limit for a given artist.
+   *
+   * @param {number} artistId - The unique identifier of the artist whose posts
+   * should be evaluated for deletion.
+   * @param {number} limit - The maximum number of most recent posts to retain.
+   * @returns {number} The number of posts that were deleted.
+   */
+  deleteOldestBeyondLimit(artistId: number, limit: number): number {
+    const stmt = this.db.prepare(`
+      DELETE FROM posts
+      WHERE artist_id = ?
+        AND id NOT IN (
+          SELECT id FROM posts WHERE artist_id = ? ORDER BY id DESC LIMIT ?
+      )
+    `);
+    return stmt.run(artistId, artistId, limit).changes;
   }
 }

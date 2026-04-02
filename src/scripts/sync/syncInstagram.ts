@@ -1,14 +1,22 @@
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import path from 'path'
 import { getAllArtists } from '@/domain/services/artistService'
-import { createPost, deletePostsByArtistId } from '@/domain/services/postService'
+import {
+  createPost,
+  getPostUrlsByArtistId,
+  deleteOldestPostsBeyondLimit
+} from '@/domain/services/postService'
 import { closeDb } from '@/data/db/client'
-import { parseInstagramHtml } from '@/data/adapters/htmlInstagramAdapter'
+import { 
+  parseInstagramHtml,
+  type ParsedInstagramPost
+} from '@/data/adapters/htmlInstagramAdapter'
 
+const MAX_POSTS = 50
 const HTML_DIR = process.env.SYNC_HTML_DIR
   ?? path.join(process.cwd(), 'src/scripts/sync')
 const POSTS_DATA_DIR = process.env.SYNC_POSTS_DIR
-    ?? path.join(process.cwd(), 'public/posts')
+  ?? path.join(process.cwd(), 'public/posts')
 
 async function downloadImage(url: string, destPath: string): Promise<void> {
   const response = await fetch(url, {
@@ -21,22 +29,32 @@ async function downloadImage(url: string, destPath: string): Promise<void> {
   writeFileSync(destPath, Buffer.from(await response.arrayBuffer()))
 }
 
-async function syncArtist(artistId: number, instagramUsername: string): Promise<void> {
+async function syncArtist(
+  artistId: number, instagramUsername: string
+): Promise<void> {
   console.log(`  Syncing @${instagramUsername}...`)
 
   const posts = parseInstagramHtml(instagramUsername, HTML_DIR)
   console.log(`    Found ${posts.length} posts in HTML`)
 
-  const artistDir = path.join(POSTS_DATA_DIR, instagramUsername)
-  mkdirSync(artistDir, { recursive: true })
+  mkdirSync(POSTS_DATA_DIR, { recursive: true })
 
-  deletePostsByArtistId(artistId)
+  const existingUrls = new Set(getPostUrlsByArtistId(artistId))
 
   let savedCount = 0
+
+  const newPosts: ParsedInstagramPost[] = []
   for (const post of posts) {
+    const instagramUrl = `https://www.instagram.com/p/${post.shortcode}/`
+    if (existingUrls.has(instagramUrl)) break
+    newPosts.push(post)
+  }
+
+  for (const post of newPosts.toReversed()) {
+    const instagramUrl = `https://www.instagram.com/p/${post.shortcode}/`
     const filename = `${post.shortcode}.jpg`
-    const destPath = path.join(artistDir, filename)
-    const localUrl = `/posts/${instagramUsername}/${filename}`
+    const destPath = path.join(POSTS_DATA_DIR, filename)
+    const localUrl = `/posts/${filename}`
 
     if (!existsSync(destPath)) {
       try {
@@ -49,7 +67,7 @@ async function syncArtist(artistId: number, instagramUsername: string): Promise<
 
     createPost({
       artistId,
-      postUrl: post.instagramUrl,
+      postUrl: instagramUrl,
       coverImageUrl: localUrl,
       mediaUrls: [localUrl],
       description: post.description,
@@ -59,7 +77,13 @@ async function syncArtist(artistId: number, instagramUsername: string): Promise<
     savedCount++
   }
 
-  console.log(`    ✓ ${savedCount}/${posts.length} posts synced`)
+  const deleted = deleteOldestPostsBeyondLimit(artistId, MAX_POSTS)
+  if (deleted > 0)
+    console.log(
+      `    🗑 Removed ${deleted} oldest posts (cap: ${MAX_POSTS})`
+    )
+
+  console.log(`    ✓ ${savedCount} new posts synced`)
 }
 
 async function syncAllArtists(): Promise<void> {
@@ -84,7 +108,9 @@ async function syncAllArtists(): Promise<void> {
     }
   }
 
-  console.log(`\nSync complete — ✓ ${successCount} synced, ✗ ${errorCount} failed`)
+  console.log(
+    `\nSync complete — ✓ ${successCount} synced, ✗ ${errorCount} failed`
+  )
 }
 
 syncAllArtists()
