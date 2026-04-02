@@ -11,6 +11,10 @@ import { SECTION_IDS } from '@/config/sections';
 import { getAllArtists } from "@/domain/services/artistService";
 import { getShop } from "@/domain/services/shopService";
 
+// Revalidate the page every 5 minutes to ensure data is fresh
+// export const revalidate = 300
+export const revalidate = 3
+
 const getCachedArtists = cache(getAllArtists);
 const getCachedShop = cache(getShop);
 
