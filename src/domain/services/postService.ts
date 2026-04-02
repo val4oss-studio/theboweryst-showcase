@@ -40,6 +40,19 @@ export function getPostsByArtistId(artistId: number): PostEntity[] {
 }
 
 /**
+ * Fetches all post URLs by an artist's unique identifier and returns them as an
+ * array of strings.
+ *
+ * @param {number} artistId - The unique identifier of the artist whose post
+ * URLs to fetch.
+ * @returns {string[]} array of strings representing the URLs of all posts by
+ * the specified artist.
+ */
+export function getPostUrlsByArtistId(artistId: number): string[] {
+  return new PostRepository().findPostUrlsByArtistId(artistId);
+}
+
+/**
  * Creates a new post in the database with the provided data and returns the
  * created PostEntity.
  *
@@ -87,4 +100,20 @@ export function deletePost(id: number): boolean {
  */
 export function deletePostsByArtistId(artistId: number): boolean {
   return new PostRepository().deleteByArtistId(artistId);
+}
+
+/**
+ * Deletes the oldest posts from the database that are associated with a specific
+ * artist's unique identifier, keeping only a specified number of the most
+ * recent posts.
+ *
+ * @param {number} artistId - The unique identifier of the artist whose oldest
+ * posts to delete.
+ * @param {number} limit - The number of most recent posts to keep for the
+ * artist. All older posts beyond this limit will be deleted.
+ * @returns {number} The number of posts that were deleted from the database.
+ */
+export function deleteOldestPostsBeyondLimit(artistId: number, limit: number):
+  number {
+    return new PostRepository().deleteOldestBeyondLimit(artistId, limit);
 }
