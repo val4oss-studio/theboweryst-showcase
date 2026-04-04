@@ -64,13 +64,14 @@ ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_DIR=/app/database
 ENV SYNC_HTML_DIR=/app/sync-html
-ENV SYNC_POSTS_DIR=/app/public/posts
+#ENV SYNC_POSTS_DIR=/app/public/posts
+ENV SYNC_POSTS_DIR=/app/data/posts
 
 # Create app user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs && \
     mkdir -p /app/database /app/sync-html /app/public/posts /app/.next/cache/images && \
-    chown nextjs:nodejs /app/database /app/sync-html /app/public/posts /app/.next/cache/images
+    chown nextjs:nodejs /app/database /app/sync-html /app/data/posts /app/.next/cache/images
 
 # Copy necessary files
 COPY --from=builder --chown=nextjs:nodejs /app/public/logo.jpg ./public

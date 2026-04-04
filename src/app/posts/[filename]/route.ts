@@ -1,0 +1,24 @@
+import { existsSync, readFileSync } from 'fs'
+import path from 'path'
+import { NextRequest, NextResponse } from 'next/server'
+
+const POSTS_DIR = process.env.SYNC_POSTS_DIR ?? path.join(process.cwd(), 'data/posts')
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ filename: string }> }
+) {
+  const { filename } = await params
+  const filePath = path.resolve(POSTS_DIR, filename)
+
+  if (!filePath.startsWith(path.resolve(POSTS_DIR)) || !existsSync(filePath)) {
+    return new NextResponse(null, { status: 404 })
+  }
+
+  return new NextResponse(readFileSync(filePath), {
+    headers: {
+      'Content-Type': 'image/jpeg',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  })
+}
