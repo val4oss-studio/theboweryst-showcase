@@ -3,6 +3,8 @@ SHELL       := /bin/bash
 BUILD_D     := build
 BUILD_LOG   := $(BUILD_D)/$(shell date +%F-%H-%M-%S).log
 IMG_NAME    := theboweryst
+REGISTRY    := ghcr.io/val4oss-studio
+IMG         ?= $(IMG_NAME)
 CTN_NAME    := theboweryst-showcase
 PORT        := 3000
 VOL_DB      := $(BUILD_D)/database
@@ -32,8 +34,8 @@ build: ## Build image with podman and save logs and archive in build dir
 test: ## Run Nextjs tests
 	npm run test
 
-run: ## Setup and run container.
-	@if ! podman image exists $(IMG_NAME); then \
+run: ## Run container. Use IMG= to override image (e.g. IMG=$(REGISTRY)/$(IMG_NAME):0.2.0)
+	@if [[ "$(IMG)" == "$(IMG_NAME)" ]] && ! podman image exists $(IMG_NAME); then \
 	    echo "Image $(IMG_NAME) not found, run 'make build' first"; \
 	    exit 1; \
 	fi
@@ -46,7 +48,7 @@ run: ## Setup and run container.
 		-v $(CURDIR)/$(VOL_DB):/app/database:Z \
 		-v $(CURDIR)/$(VOL_SYNC):/app/sync-html:Z \
 		-v $(CURDIR)/$(VOL_POSTS):/app/data/posts:Z \
-		$(IMG_NAME)
+		$(IMG)
 	@echo "✅ Site Available on http://localhost:$(PORT)"
 	@cp src/scripts/sync/*.html $(VOL_SYNC)/ 2>/dev/null || true
 	podman exec $(CTN_NAME) node scripts/sync/syncInstagram

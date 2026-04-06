@@ -1,0 +1,66 @@
+name: Build & Publish
+
+on:
+  push:
+    branches: [main, main-next]
+    tags: ['[0-9]*']
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for git describe
+          lfs: true
+
+      - name: Compute version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          else
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+            OFFSET=$(git rev-list "${LAST_TAG}..HEAD" --count)
+            VERSION="${LAST_TAG}+${OFFSET}"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull LFS files
+        run: git lfs pull
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Verify LFS files
+        run: |
+          size=$(stat -c%s public/theboweryst_background_web.webm)
+          if [ "$size" -lt 1000000 ]; then
+            echo "ERROR: LFS file not downloaded (size=${size}). Aborting."
+            exit 1
+          fi
+          echo "LFS video OK (${size} bytes)"
+
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Containerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/theboweryst:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/theboweryst:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
