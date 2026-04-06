@@ -1,30 +1,73 @@
 # The Boweryst — showcase
 
-Bilingual (FR/EN) showcase website for **The Boweryst** tattoo studio.
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![Unlicense License][license-shield]][license-url]
 
-**Production:** https://theboweryst.fr
+<br />
+<div align="center">
+  <a href="https://github.com/val4oss-studio/theboweryst-showcase">
+    <img src="public/logo.jpg" alt="Logo" width="80" height="80">
+  </a>
 
----
+  <p align="center">
+    Showcase website for <b>The boweryst</b> tattoo studio.
+    <br />
+    <a href="https://github.com/val4oss-studio/theboweryst-showcase"><strong>Explore the sources »</strong></a>
+    <br />
+    <br />
+<a href="https://theboweryst.fr">View the site</a>
+    &middot;
+    <a href="https://github.com/val4oss-studio/theboweryst-showcase/issues/new?template=bug-report-%F0%9F%90%9B.md">Report Bug</a>
+    &middot;
+    <a href="https://github.com/val4oss-studio/theboweryst-showcase/issues/new?template=feature-request-%F0%9F%9A%80.md">Request Feature</a>
+  </p>
+</div>
 
 ## Stack
 
-- **Next.js 16** (App Router, Server Components)
-- **SQLite3** via `better-sqlite3` (local database mounted as a volume)
-- **Tailwind CSS v4**
-- **TypeScript**
+* [![Next.js][nextjs-badge]][nextjs-url]
+* [![Sqlite3][sqlite-badge]][sqlite-url]
+* [![tailwind css][tailwind-badge]][tailwind-url]
+* [![typescript][typescript-badge]][typescript-url]
 
----
+## Features
+
+* ![theme feature][theme-badge]
+* ![i18n feature][language-badge]
+* ![instagram feature][instagram-badge]
+
+## Deployment with Makefile & Podman
+
+### 1. Build the image
+
+```bash
+make build
+```
+
+### 2. Run the project in container
+
+```bash
+make run
+```
+
+### 3. Stop and clean
+
+```bash
+make stop
+make clean
+```
 
 ## Local Development
 
 ```bash
 npm install
 npm run db:migrate   # Create tables
-npm run db:seed      # Seed initial data (optional)
+npm run db:seed      # Seed initial data
 npm run dev          # http://localhost:3000
 ```
-
----
 
 ## Management Scripts (CLI)
 
@@ -72,65 +115,24 @@ npm run shop:update description en "A tattoo studio..."
 
 ---
 
-## Deployment with Podman
-
-### 1. Build the image (locally)
-
-```bash
-podman build -t theboweryst -f Containerfile .
-```
-
-### 2. Export the image as a tar archive
-
-```bash
-podman save -o theboweryst.tar theboweryst
-```
-
-### 3. Transfer to the server
-
-```bash
-scp theboweryst.tar user@monserveur:/home/user/
-```
-
-### 4. Load on the server
-
-```bash
-# Connect to the server
-ssh user@monserveur.fr
-
-# Load the image
-podman load -i theboweryst.tar
-```
-
-### 5. Run the container
-
-```bash
-podman run -d \
-  --name theboweryst \
-  --restart=unless-stopped \
-  -p 3000:3000 \
-  -v /data/theboweryst/database:/app/database \
-  theboweryst
-```
-
-> The `/data/theboweryst/database` directory must exist on the server and contain `app.db`.
-> First install: initialize the database inside the container.
-
----
-
-## Scripts inside the container
-
-CLI scripts are compiled into the image at `/app/scripts/`:
-
-```bash
-# Artists
-podman exec theboweryst node scripts/artist/list.js
-podman exec theboweryst node scripts/artist/get.js <id>
-podman exec theboweryst node scripts/artist/add.js <username> <igId> <bio_fr> <bio_en>
-podman exec theboweryst node scripts/artist/remove.js <id>
-
-# Posts
-podman exec theboweryst node scripts/post/list.js
-podman exec theboweryst node scripts/post/get.js <id>
-podman exec theboweryst node scripts/post/remove.js <id>
-```
+[contributors-shield]: https://img.shields.io/github/contributors/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
+[contributors-url]: https://github.com/val4oss-studio/theboweryst-showcase/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
+[forks-url]: https://github.com/val4oss-studio/theboweryst-showcase/network/forks
+[stars-shield]: https://img.shields.io/github/stars/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
+[stars-url]: https://github.com/val4oss-studio/theboweryst-showcase/stargazers
+[issues-shield]: https://img.shields.io/github/issues/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
+[issues-url]: https://github.com/val4oss-studio/theboweryst-showcase/issues
+[license-shield]: https://img.shields.io/github/license/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
+[license-url]: https://github.com/val4oss-studio/theboweryst-showcase/blob/main/LICENSE
+[sqlite-badge]: https://img.shields.io/badge/better_SQLite_V3-003B57?style=for-the-badge&logo=sqlite&logoColor=white
+[sqlite-url]: https://www.npmjs.com/package/better-sqlite3
+[nextjs-badge]: https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[nextjs-url]: https://vercel.com/geist/brands#next-js
+[tailwind-badge]: https://img.shields.io/badge/tailwind_css_V4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white
+[tailwind-url]: https://tailwindcss.com/brand
+[typescript-badge]: https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[typescript-url]: https://www.typescriptlang.org/branding
+[theme-badge]: https://img.shields.io/badge/theme-Dark%20Light-blue?style=for-the-badge
+[language-badge]: https://img.shields.io/badge/i18n-Fran%C3%A7ais_English-red?style=for-the-badge
+[instagram-badge]: https://img.shields.io/badge/instagram-synchronisation_posts-FF0069?style=for-the-badge&logo=instagram
