@@ -70,7 +70,7 @@ export function Navbar() {
               <div className="navbar-logo">
                 <button onClick={() => scrollToSection("home")}>
                   <Image
-                    src="/logo.jpg"
+                    src="/theboweryst-logo.png"
                     alt="The Bowery Street Logo"
                     width={60}
                     height={60}
@@ -103,7 +103,7 @@ export function Navbar() {
             <div className="navbar-logo">
               <button onClick={() => scrollToSection("home")}>
                 <Image
-                  src="/logo.jpg"
+                  src="/theboweryst-logo.png"
                   alt="The Bowery Street Logo"
                   width={50}
                   height={50}

@@ -31,7 +31,7 @@ export function Footer({ shop, artists }: FooterProps) {
         <div className="footer-section footer-brand">
           <div className="footer-logo">
             <Image
-              src="/logo.jpg"
+              src="/theboweryst-logo.png"
               alt="The Bowery Street Logo"
               width={80}
               height={80}
