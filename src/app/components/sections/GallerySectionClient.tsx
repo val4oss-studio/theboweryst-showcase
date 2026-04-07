@@ -26,15 +26,24 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
   useEffect(() => {
     if (!isAutoPlay || artists.length <= 1) return;
 
+    let fadeTimeout: ReturnType<typeof setTimeout> | null = null;
+
     const interval = setInterval(() => {
       setFadeState('out');
-      setTimeout(() => {
+      fadeTimeout = setTimeout(() => {
         setSelectedIndex((prev) => (prev + 1) % artists.length);
         setFadeState('in');
+        fadeTimeout = null;
       }, 300);
     }, AUTO_CYCLE_INTERVAL);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (fadeTimeout !== null) {
+        clearTimeout(fadeTimeout);
+        setFadeState('in');
+      }
+    };
   }, [isAutoPlay, artists.length]);
 
   const handleArtistClick = (index: number) => {
@@ -106,6 +115,7 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
                   sizes="(max-width: 768px) 150px, 250px"
                   className="gallery-image"
                   unoptimized
+                  loading="eager"
                 />
                 <div className="gallery-more-overlay">
                   <MoreHorizontal className="gallery-more-icon" />
@@ -130,6 +140,7 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
                 sizes="(max-width: 768px) 150px, 250px"
                 className="gallery-image"
                 unoptimized
+                loading="eager"
               />
             </a>
           );
