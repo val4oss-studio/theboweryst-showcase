@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # required for git describe
           lfs: true
@@ -22,17 +22,21 @@ jobs:
       - name: Compute version
         id: version
         run: |
+          IS_TAG=false
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             VERSION="${GITHUB_REF#refs/tags/}"
+            IS_TAG=true
           else
             LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
             OFFSET=$(git rev-list "${LAST_TAG}..HEAD" --count)
-            VERSION="${LAST_TAG}+${OFFSET}"
+            VERSION="${LAST_TAG}-${OFFSET}"
           fi
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "is_tag=${IS_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Login to ghcr.io
-        uses: docker/login-action@v3
+        if: steps.version.outputs.is_tag == 'true'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -42,7 +46,7 @@ jobs:
         run: git lfs pull
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Verify LFS files
         run: |
@@ -53,8 +57,19 @@ jobs:
           fi
           echo "LFS video OK (${size} bytes)"
 
-      - name: Build & push
-        uses: docker/build-push-action@v6
+      - name: Build (branch — no push)
+        if: steps.version.outputs.is_tag == 'false'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Containerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push (tag)
+        if: steps.version.outputs.is_tag == 'true'
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Containerfile
