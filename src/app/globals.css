@@ -103,6 +103,7 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--background); /* Prevents white flash during fast mobile scroll */
 }
 
 body {
@@ -204,7 +205,7 @@ body {
    ============================================ */
 
 .section {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
