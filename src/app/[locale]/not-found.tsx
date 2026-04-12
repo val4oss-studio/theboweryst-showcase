@@ -1,11 +1,10 @@
 import Link from 'next/link'
 
 export default function NotFound() {
-  const link_txt = 'Retour à l\'accueil';
   return (
     <div>
-      <h2>Page introuvable</h2>
-      <Link href="/fr">`${link_txt}`</Link>
+      <h2>Page not found</h2>
+      <Link href="/en">Back to home</Link>
     </div>
   )
 }

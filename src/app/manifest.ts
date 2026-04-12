@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'The Bowery Street Studio Tatouage',
     short_name: 'The Boweryst',
     description: 'Studio de tatouage professionnel à Lorient, Bretagne',
-    start_url: '/fr',
+    start_url: '/',
     display: 'standalone',
     background_color: '#0a0a0a',
     theme_color: '#ededed',
