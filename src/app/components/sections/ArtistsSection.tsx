@@ -28,8 +28,8 @@ export function ArtistsSection({ id, artists }: ArtistsSectionProps) {
           aria-hidden="true"
         />
         <div className="artists-grid">
-          {artists.map((artist) => (
-            <ArtistCard key={artist.username} artist={artist} />
+          {artists.map((artist, index) => (
+            <ArtistCard key={artist.username} artist={artist} priority={index === 0} />
           ))}
         </div>
       </div>
