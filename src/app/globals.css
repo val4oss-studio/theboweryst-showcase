@@ -211,6 +211,7 @@ body {
   justify-content: center;
   padding: 5rem 1rem;
   position: relative;
+  overflow: clip;
 }
 
 .section-container {
@@ -588,9 +589,22 @@ body {
   transform: translate(-40%, -40%);
 }
 
+
 .hero-flower-yellow {
   height: 1em;
   transform: translate(-40%, 20%);
+}
+
+@media (max-width: 640px) {
+  .hero-flower-red {
+    height: 0.8em;
+    transform: translate(-10%, -60%);
+  }
+
+  .hero-flower-yellow {
+    height: 0.8em;
+    transform: translate(-60%, 20%);
+  }
 }
 
 .hero-buttons {
@@ -1402,6 +1416,7 @@ body {
   
   .section {
     padding: 3rem 1rem;
+    padding-top: 6rem;
   }
 }
 
