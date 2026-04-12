@@ -10,9 +10,10 @@ import { useI18n } from "@/app/i18n/provider";
 
 interface ArtistCardProps {
   artist: ArtistEntity;
+  priority?: boolean;
 }
 
-export function ArtistCard({ artist }: ArtistCardProps) {
+export function ArtistCard({ artist, priority }: ArtistCardProps) {
   const { locale } = useI18n();
   const instagramUrl = getArtistInstagramUrl(artist);
   const imageUrl = getArtistProfileImage(artist);
@@ -36,6 +37,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
           width={400}
           height={400}
           className="card-image"
+          priority={priority}
         />
       </div>
       <div className="card-content">
