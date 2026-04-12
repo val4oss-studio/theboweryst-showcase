@@ -2,7 +2,10 @@
 
 import { createContext, useContext, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Locale } from '@/config/locales'
+import { 
+  type Locale,
+  defaultLocale
+} from '@/config/locales'
 import { getTranslations, type Translations } from "./translations";
 
 interface I18nContextType {
@@ -27,7 +30,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
 
   const setLocale = (newLocale: Locale) => {
     if (newLocale !== initialLocale) {
-      router.push(`/${newLocale}`);
+      router.push(newLocale === defaultLocale ? '/' : `/${newLocale}`)
     }
   }
 

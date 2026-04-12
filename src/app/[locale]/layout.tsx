@@ -27,7 +27,7 @@ export async function generateMetadata(
     openGraph: {
       type: "website",
       locale: isFr ? "fr_FR" : "en_US",
-      url: `https://theboweryst.fr/${locale}`,
+      url: isFr ? 'https://theboweryst.fr/' : `https://theboweryst.fr/${locale}`,
       siteName: "The Bowery Street Tattoo Studio",
       title: isFr
         ? "The Bowery Street | Studio de Tatouage à Lorient"
@@ -48,11 +48,11 @@ export async function generateMetadata(
       images: ["/logo.jpg"],
     },
     alternates: {
-      canonical: `https://theboweryst.fr/${locale}`,
+      canonical: isFr ? 'https://theboweryst.fr/' : `https://theboweryst.fr/${locale}`,
       languages: {
-        'fr': 'https://theboweryst.fr/fr',
+        'fr': 'https://theboweryst.fr/',
         'en': 'https://theboweryst.fr/en',
-        'x-default': 'https://theboweryst.fr/fr',
+        'x-default': 'https://theboweryst.fr/',
       },
     },
   };
