@@ -42,6 +42,7 @@ RUN npx esbuild \
       src/scripts/sync/syncInstagram.ts \
       --bundle --platform=node \
       --external:better-sqlite3 \
+      --external:sharp \
       --outdir=dist/scripts && \
     npx esbuild \
       src/data/db/scripts/migrate.ts \
@@ -69,22 +70,23 @@ ENV SYNC_POSTS_DIR=/app/data/posts
 
 # Create app user
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    mkdir -p /app/database /app/sync-html /app/data/posts \
-             /app/.next/cache/images /app/public/artists && \
-    chown nextjs:nodejs /app/database /app/sync-html /app/data/posts \
-                        /app/.next/cache/images
+    adduser --system --uid 1001 nextjs
 
 # Copy necessary files
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/dist/scripts ./scripts
+
+COPY --from=builder --chown=nextjs:nodejs /app/public/artists ./public/artists
 COPY --from=builder --chown=nextjs:nodejs /app/public/logo.jpg ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst-logo.png ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/default-avatar.jpg ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/robots.txt ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst_background_web.webm ./public
-COPY --from=builder --chown=nextjs:nodejs /app/public/artists ./public/artists
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/dist/scripts ./scripts
+
+# Create necessary directories and set permissions
+RUN mkdir -p /app/database /app/sync-html /app/public/posts /app/.next/cache/images && \
+    chown nextjs:nodejs /app/database /app/sync-html /app/public/posts /app/.next/cache/images
 
 USER nextjs
 

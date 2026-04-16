@@ -1,5 +1,6 @@
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import path from 'path'
+import sharp from 'sharp'
 import { getAllArtists } from '@/domain/services/artistService'
 import {
   createPost,
@@ -26,7 +27,13 @@ async function downloadImage(url: string, destPath: string): Promise<void> {
     },
   })
   if (!response.ok) throw new Error(`HTTP ${response.status}`)
-  writeFileSync(destPath, Buffer.from(await response.arrayBuffer()))
+
+    const buffer = Buffer.from(await response.arrayBuffer())
+
+    await sharp(buffer)
+      .resize({ width: 600, withoutEnlargement: true })
+      .jpeg({ quality: 70 })
+      .toFile(destPath)
 }
 
 async function syncArtist(
@@ -37,33 +44,36 @@ async function syncArtist(
   const posts = parseInstagramHtml(instagramUsername, HTML_DIR)
   console.log(`    Found ${posts.length} posts in HTML`)
 
-  mkdirSync(POSTS_DATA_DIR, { recursive: true })
-
   const existingUrls = new Set(getPostUrlsByArtistId(artistId))
 
+  mkdirSync(POSTS_DATA_DIR, { recursive: true })
+
   let savedCount = 0
-
   const newPosts: ParsedInstagramPost[] = []
+  
   for (const post of posts) {
-    const instagramUrl = `https://www.instagram.com/p/${post.shortcode}/`
-    if (existingUrls.has(instagramUrl)) break
-    newPosts.push(post)
-  }
-
-  for (const post of newPosts.toReversed()) {
     const instagramUrl = `https://www.instagram.com/p/${post.shortcode}/`
     const filename = `${post.shortcode}.jpg`
     const destPath = path.join(POSTS_DATA_DIR, filename)
-    const localUrl = `/posts/${filename}`
 
     if (!existsSync(destPath)) {
       try {
         await downloadImage(post.cdnImageUrl, destPath)
       } catch (err) {
         console.warn(`    ⚠ Failed to download ${post.shortcode}: ${err}`)
-        continue
+        continue // skip this post
       }
     }
+
+    if (!existingUrls.has(instagramUrl)) {
+      newPosts.push(post)
+    }
+  }
+
+    for (const post of newPosts.toReversed()) {
+    const instagramUrl = `https://www.instagram.com/p/${post.shortcode}/`
+    const filename = `${post.shortcode}.jpg`
+    const localUrl = `/posts/${filename}`
 
     createPost({
       artistId,
