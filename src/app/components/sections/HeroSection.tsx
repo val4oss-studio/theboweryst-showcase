@@ -77,7 +77,7 @@ export function HeroSection({id, shop}: HeroSectionProps) {
         {beforeB.slice(1)}
         <Image
           src="/theboweryst-B.png"
-          alt="B"
+          alt=""
           width={1024}
           height={1024}
           className="hero-title-b-logo"
@@ -119,8 +119,13 @@ export function HeroSection({id, shop}: HeroSectionProps) {
             />
           </span>
 
-          <h1 className="page-title" aria-label={shop.name}>
-            {renderTitle()}
+          <h1 className="page-title">
+            {/* Readable heading for crawlers and screen readers; the
+                stylized title (letters split around the B logo) is visual. */}
+            <span className="sr-only">
+              {t.hero.heading.replace('{name}', shop.name)}
+            </span>
+            <span aria-hidden="true">{renderTitle()}</span>
           </h1>
         </div>
         <p className="page-subtitle mt-4">{shop.description[locale]}</p>

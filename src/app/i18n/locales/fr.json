@@ -14,7 +14,8 @@
     "subtitle": "Studio de tatouage professionnel à Lorient, France. Créant des œuvres d'art corporel uniques depuis août 2024.",
     "instagram": "Suivez-nous",
     "facebook": "Aimez-nous",
-    "location": "Trouvez-nous"
+    "location": "Trouvez-nous",
+    "heading": "{name}, salon de tatouage à Lorient (Morbihan)"
   },
   "about": {
     "title": "À Propos de Nous",
@@ -33,7 +34,10 @@
     "missbunny": {
       "name": "Miss Bunny",
       "specialty": "Blackwork & Illustratif"
-    }
+    },
+    "intro": "Les trois tatoueuses du salon {name} à Lorient : {artists}.",
+    "and": "et",
+    "cardAlt": "{name}, tatoueuse au salon {shop} à Lorient"
   },
   "gallery": {
     "title": "Galerie",

@@ -1,17 +1,18 @@
 import { MetadataRoute } from 'next'
-import { locales, defaultLocale } from '@/config/locales';
+import { locales } from '@/config/locales';
+import { localeUrl } from '@/config/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const languages = {
+    ...Object.fromEntries(locales.map((locale) => [locale, localeUrl(locale)])),
+    'x-default': localeUrl('fr'),
+  };
+
   return locales.map((locale) => ({
-    url: locale === defaultLocale ? 'https://theboweryst.fr/' : `https://theboweryst.fr/${locale}`,
+    url: localeUrl(locale),
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 1.0,
-    alternates: {
-      languages: {
-        fr: 'https://theboweryst.fr/',
-        en: 'https://theboweryst.fr/en',
-      },
-    },
+    alternates: { languages },
   }));
 }

@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { Navbar, Footer } from "@/app/components/layout";
+import { Navbar, Footer, StructuredData } from "@/app/components/layout";
 import {
   HeroSection,
   AboutSection,
@@ -10,6 +10,7 @@ import {
 import { SECTION_IDS } from '@/config/sections';
 import { getAllArtists } from "@/domain/services/artistService";
 import { getShop } from "@/domain/services/shopService";
+import type { Locale } from "@/config/locales";
 
 // Revalidate the page every 5 minutes to ensure data is fresh
 // export const revalidate = 300
@@ -18,7 +19,12 @@ export const revalidate = 3
 const getCachedArtists = cache(getAllArtists);
 const getCachedShop = cache(getShop);
 
-export default async function Home() {
+interface HomeProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function Home({ params }: HomeProps) {
+  const locale = (await params).locale as Locale;
   const artists = await getCachedArtists();
   const shop = await getCachedShop();
 
@@ -28,10 +34,11 @@ export default async function Home() {
 
   return (
     <>
+      <StructuredData locale={locale} shop={shop} artists={artists} />
       <Navbar />
       <HeroSection id={SECTION_IDS.home} shop={shop}/>
       <AboutSection id={SECTION_IDS.about} />
-      <ArtistsSection id={SECTION_IDS.artists} artists={artists}/>
+      <ArtistsSection id={SECTION_IDS.artists} shopName={shop.name} artists={artists}/>
       <GallerySection id={SECTION_IDS.gallery} artists={artists}/>
       <ContactSection id={SECTION_IDS.contact} shop={shop} artists={artists}/>
       <Footer shop={shop} artists={artists}/>

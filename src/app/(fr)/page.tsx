@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { Navbar, Footer } from "@/app/components/layout";
+import { Navbar, Footer, StructuredData } from "@/app/components/layout";
 import {
   HeroSection,
   AboutSection,
@@ -26,10 +26,11 @@ export default async function Home() {
 
   return (
     <>
+      <StructuredData locale={"fr"} shop={shop} artists={artists} />
       <Navbar />
       <HeroSection id={SECTION_IDS.home} shop={shop}/>
       <AboutSection id={SECTION_IDS.about} />
-      <ArtistsSection id={SECTION_IDS.artists} artists={artists}/>
+      <ArtistsSection id={SECTION_IDS.artists} shopName={shop.name} artists={artists}/>
       <GallerySection id={SECTION_IDS.gallery} artists={artists}/>
       <ContactSection id={SECTION_IDS.contact} shop={shop} artists={artists}/>
       <Footer shop={shop} artists={artists}/>

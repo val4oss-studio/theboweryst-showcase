@@ -208,6 +208,20 @@ body {
   color: var(--muted);
 }
 
+.card-handle {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.card-handle:hover {
+  color: var(--accent);
+}
+
 .text-body {
   font-size: 1rem;
   line-height: 1.75;
@@ -252,6 +266,14 @@ body {
 .section-header {
   text-align: center;
   margin-bottom: 3rem;
+}
+
+.section-intro {
+  max-width: 40rem;
+  margin: 1rem auto 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--muted);
 }
 
 .artists-section-flower {

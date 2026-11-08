@@ -75,6 +75,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/public/default-avatar.jpg ./publi
 COPY --from=builder --chown=nextjs:nodejs /app/public/robots.txt ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/icon-192.png ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/icon-512.png ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public/og-image.jpg ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst_background_web.webm ./public
 
 # Create necessary directories and set permissions

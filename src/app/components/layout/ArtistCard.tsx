@@ -10,11 +10,12 @@ import { useI18n } from "@/app/i18n/provider";
 
 interface ArtistCardProps {
   artist: ArtistEntity;
+  shopName: string;
   priority?: boolean;
 }
 
-export function ArtistCard({ artist, priority }: ArtistCardProps) {
-  const { locale } = useI18n();
+export function ArtistCard({ artist, shopName, priority }: ArtistCardProps) {
+  const { t, locale } = useI18n();
   const instagramUrl = getArtistInstagramUrl(artist);
   const imageUrl = getArtistProfileImage(artist);
 
@@ -33,7 +34,9 @@ export function ArtistCard({ artist, priority }: ArtistCardProps) {
       <div className="card-image-wrapper">
         <Image
           src={imageUrl}
-          alt={`${artist.username} - Artiste tatoueur au The Bowery Street, Lorient`}
+          alt={t.artists.cardAlt
+            .replace('{name}', artist.username)
+            .replace('{shop}', shopName)}
           width={400}
           height={400}
           className="card-image"
@@ -42,6 +45,18 @@ export function ArtistCard({ artist, priority }: ArtistCardProps) {
       </div>
       <div className="card-content">
         <h3 className="card-title">{artist.username}</h3>
+        {instagramUrl && (
+          // A real link: crawlers do not follow the card's onClick.
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card-handle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            @{artist.instagramName}
+          </a>
+        )}
         <p className="card-subtitle">{artist.bio[locale]}</p>
       </div>
     </div>

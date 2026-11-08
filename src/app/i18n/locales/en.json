@@ -14,7 +14,8 @@
     "subtitle": "Professional tattoo studio in Lorient, France. Creating unique body art since August 2024.",
     "instagram": "Follow Us",
     "facebook": "Like Us",
-    "location": "Find Us"
+    "location": "Find Us",
+    "heading": "{name}, tattoo studio in Lorient, Brittany"
   },
   "about": {
     "title": "About Us",
@@ -33,7 +34,10 @@
     "missbunny": {
       "name": "Miss Bunny",
       "specialty": "Blackwork & Illustrative"
-    }
+    },
+    "intro": "The three tattoo artists of {name} in Lorient: {artists}.",
+    "and": "and",
+    "cardAlt": "{name}, tattoo artist at {shop} in Lorient"
   },
   "gallery": {
     "title": "Gallery",
