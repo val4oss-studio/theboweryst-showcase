@@ -4,8 +4,7 @@ import Image from "next/image";
 import { ArtistCard } from "@/app/components/layout/ArtistCard";
 import { useI18n } from "@/app/i18n/provider";
 import type { Artist } from "@/content/artists";
-import { formatGuestDates, type Guest } from "@/content/guests";
-import { shop } from "@/content/shop";
+import type { Guest } from "@/content/guests";
 
 interface ArtistsSectionProps {
   id: string;
@@ -15,20 +14,7 @@ interface ArtistsSectionProps {
 }
 
 export function ArtistsSection({ id, artists, guests }: ArtistsSectionProps) {
-  const { t, locale } = useI18n();
-
-  const joinNames = (names: string[]) =>
-    names.length > 1
-      ? `${names.slice(0, -1).join(', ')} ${t.artists.and} ${names[names.length - 1]}`
-      : names.join('');
-  const artistList = joinNames(
-    artists.map((artist) => `${artist.name} (@${artist.instagram})`)
-  );
-  const guestList = joinNames(
-    guests.map((guest) =>
-      `${guest.name} (@${guest.instagram}), ${formatGuestDates(guest, locale)}`
-    )
-  );
+  const { t } = useI18n();
 
   return (
     <section id={id} className="section">
@@ -44,14 +30,6 @@ export function ArtistsSection({ id, artists, guests }: ArtistsSectionProps) {
           className="artists-section-flower"
           aria-hidden="true"
         />
-        <p className="section-intro">
-          {t.artists.intro
-            .replace('{name}', shop.name)
-            .replace('{artists}', artistList)}
-          {guests.length > 0 && (
-            <> {t.artists.guestIntro.replace('{guests}', guestList)}</>
-          )}
-        </p>
         <div className="artists-grid">
           {artists.map((artist, index) => (
             <ArtistCard key={artist.id} artist={artist} priority={index === 0} />

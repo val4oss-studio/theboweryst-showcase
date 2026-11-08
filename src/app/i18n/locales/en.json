@@ -19,7 +19,7 @@
   },
   "about": {
     "title": "About Us",
-    "description": "The Bowery Street opened its doors in August 2024, bringing a fresh wave of creativity to Lorient's tattoo scene. Our studio is home to three brilliant, dedicated, and passionate artists, each with their own unique specialties and artistic vision. From fine line delicacy to bold traditional work, our talented team transforms skin into living art. Our artists regularly participate in artistic events throughout Brittany and across France, constantly evolving their craft and bringing the latest trends and techniques to our studio. Whether you're looking for your first tattoo or adding to your collection, we're here to bring your vision to life with precision, creativity, and care."
+    "description": "The Bowery Street opened its doors in August 2024, bringing a fresh wave of creativity to Lorient's tattoo scene. Our studio is home to three brilliant, dedicated, and passionate artists: {artists}. Each has her own specialties and unique artistic vision. From fine line delicacy to bold traditional work, our talented team transforms skin into living art. Our artists regularly participate in artistic events throughout Brittany and across France, constantly evolving their craft and bringing the latest trends and techniques to our studio. Whether you're looking for your first tattoo or adding to your collection, we're here to bring your vision to life with precision, creativity, and care."
   },
   "artists": {
     "title": "Our Artists",
@@ -35,13 +35,11 @@
       "name": "Miss Bunny",
       "specialty": "Blackwork & Illustrative"
     },
-    "intro": "The three tattoo artists of {name} in Lorient: {artists}.",
     "and": "and",
     "cardAlt": "{name}, tattoo artist at {shop} in Lorient",
     "guest": "Guest",
     "guestDates": "Guest spot: {dates}",
-    "guestAlt": "{name}, guest tattoo artist at {shop} in Lorient",
-    "guestIntro": "Guest artists at the studio: {guests}."
+    "guestAlt": "{name}, guest tattoo artist at {shop} in Lorient"
   },
   "gallery": {
     "title": "Gallery",

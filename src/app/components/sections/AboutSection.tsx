@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useI18n } from "@/app/i18n/provider";
+import { artists } from "@/content/artists";
 
 interface AboutSectionProps {
   id: string;
@@ -9,6 +10,11 @@ interface AboutSectionProps {
 
 export function AboutSection({id}: AboutSectionProps) {
   const { t } = useI18n();
+  // Names from the content, so the text follows the team.
+  const names = artists.map((artist) => artist.name);
+  const artistList = names.length > 1
+    ? `${names.slice(0, -1).join(', ')} ${t.artists.and} ${names[names.length - 1]}`
+    : names.join('');
 
   return (
     <section id={id} className="section">
@@ -25,7 +31,7 @@ export function AboutSection({id}: AboutSectionProps) {
           aria-hidden="true"
         />
         <p className="section-subtitle text-center">
-          {t.about.description}
+          {t.about.description.replace('{artists}', artistList)}
         </p>
       </div>
     </section>

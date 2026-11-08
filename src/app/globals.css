@@ -268,16 +268,6 @@ body {
   margin-bottom: 3rem;
 }
 
-/* Intro paragraph of a section, between its decoration and its content */
-.section-intro {
-  max-width: 40rem;
-  margin: 0 auto 2.5rem;
-  text-align: center;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--muted);
-}
-
 .artists-section-flower {
   display: block;
   height: 2.5rem;
