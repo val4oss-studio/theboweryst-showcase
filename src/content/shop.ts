@@ -46,10 +46,11 @@ export const shop: Shop = {
   addressCity: 'Lorient',
   addressRegion: 'Morbihan',
   regionCode: 'FR-56',
-  // 6 rue de Turenne, from Google Maps.
-  latitude: 47.74988,
-  longitude: -3.360671,
-  mapUrl: 'https://www.google.com/maps/search/?api=1&query=6+Rue+Turenne+56100+Lorient',
+  // Marker of the studio's Google Maps listing.
+  latitude: 47.7498903,
+  longitude: -3.3606543,
+  // Google Maps business listing of the studio (not the bare address).
+  mapUrl: 'https://www.google.com/maps/place/The+Bowery+street/@47.7499384,-3.3605396,21z/data=!4m15!1m8!3m7!1s0x48105e575a38cb81:0xd2530f43600e6e94!2s6+Rue+Turenne,+56100+Lorient!3b1!8m2!3d47.7499308!4d-3.3606628!16s%2Fg%2F11c29xv_8y!3m5!1s0x48105f002dff4881:0xc95ddad2a928916e!8m2!3d47.7498903!4d-3.3606543!16s%2Fg%2F11lmhq23f8',
   instagramUrl: 'https://www.instagram.com/theboweryst/',
   instagramUsername: 'theboweryst',
   facebookUrl: 'https://www.facebook.com/share/1DpTvDjBrQ',
