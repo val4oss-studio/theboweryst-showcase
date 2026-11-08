@@ -1,26 +1,31 @@
-import { Suspense, cache } from 'react';
-import { getPostsByArtistId } from '@/domain/services/postService';
+import { Suspense } from 'react';
 import type { ArtistEntity } from '@/domain/entities/artistEntity';
-import type { PostEntity } from '@/domain/entities/postEntity';
+import type { InstagramFeed } from '@/content/instagram';
+import { getInstagramFeed } from '@/content/instagramFeed';
 import { GallerySectionClient } from './GallerySectionClient';
 
 interface GalleryContentProps {
   artists: ArtistEntity[];
 }
 
-const  getCachedPostsByArtist = cache(getPostsByArtistId);
-
+/**
+ * Fetches the Instagram feed of every artist from val4oss-media, together.
+ * Each one fails alone: `null` renders a link to the artist's profile.
+ */
 async function GalleryContent({ artists }: GalleryContentProps) {
-  const postsByArtistId: Record<number, PostEntity[]> = {};
+  const feeds = await Promise.all(
+    artists.map((artist) => getInstagramFeed(artist.instagramName))
+  );
 
-  for (const artist of artists) {
-    postsByArtistId[artist.id] = await getCachedPostsByArtist(artist.id);
-  }
+  const feedsByArtistId: Record<number, InstagramFeed | null> = {};
+  artists.forEach((artist, index) => {
+    feedsByArtistId[artist.id] = feeds[index];
+  });
 
   return (
     <GallerySectionClient
       artists={artists}
-      postsByArtistId={postsByArtistId}
+      feedsByArtistId={feedsByArtistId}
     />
   );
 }

@@ -1,5 +1,4 @@
 import { ArtistRepository } from "@/data/repositories/artistRepository";
-import { PostRepository } from "@/data/repositories/postRepository";
 import { ShopRepository } from "@/data/repositories/shopRepository";
 import { closeDb } from "@/data/db/client";
 

@@ -66,7 +66,8 @@ make clean
 npm install
 npm run db:migrate   # Create tables
 npm run db:seed      # Seed initial data
-npm run dev          # http://localhost:3000
+VAL4OSS_MEDIA_URL=https://media.val4oss.com VAL4OSS_MEDIA_KEY=vm_... \
+  npm run dev        # http://localhost:3000
 ```
 
 ## Management Scripts (CLI)
@@ -103,15 +104,25 @@ npm run shop:update description en "A tattoo studio..."
 | `npm run artist:add <username> <instagramId> <bio_fr> <bio_en> [photo]` | Add an artist |
 | `npm run artist:remove <id>` | Remove an artist |
 
-### Instagram Posts
+## Instagram gallery (val4oss-media)
 
-| Command | Description |
+The gallery shows the Instagram posts of each artist (their `instagramId`),
+served by [val4oss-media](https://media.val4oss.com). The site stores no
+post: it reads the feed server-side and the images through `/_next/image`.
+
+Server environment (runtime only, never `NEXT_PUBLIC_`):
+
+| Variable | Description |
 |---|---|
-| `npm run post:list` | List all posts |
-| `npm run post:get <id>` | Show post details |
-| `npm run post:add <args>` | Add a post |
-| `npm run post:remove <id>` | Remove a post |
-| `npm run instagram:sync` | Sync posts from Instagram |
+| `VAL4OSS_MEDIA_URL` | `https://media.val4oss.com` |
+| `VAL4OSS_MEDIA_KEY` | API key, `media-cli key issue <client>` |
+| `VAL4OSS_MEDIA_WEBHOOK_SECRET` | Optional, `media-cli client set-webhook <client> https://<site>/api/val4oss-media/webhook` |
+
+A missing or invalid variable makes the server answer 500 (checked in
+`src/instrumentation.ts`); `npm run build` does not need them. An account
+not synced yet renders a link to the artist's profile instead of the posts.
+
+After a change of the API contract: `npm run generate:api`.
 
 ---
 
@@ -135,4 +146,4 @@ npm run shop:update description en "A tattoo studio..."
 [typescript-url]: https://www.typescriptlang.org/branding
 [theme-badge]: https://img.shields.io/badge/theme-Dark%20Light-blue?style=for-the-badge
 [language-badge]: https://img.shields.io/badge/i18n-Fran%C3%A7ais_English-red?style=for-the-badge
-[instagram-badge]: https://img.shields.io/badge/instagram-synchronisation_posts-FF0069?style=for-the-badge&logo=instagram
+[instagram-badge]: https://img.shields.io/badge/instagram-val4oss--media_gallery-FF0069?style=for-the-badge&logo=instagram

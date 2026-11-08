@@ -35,6 +35,29 @@
   --navbar-border: rgba(0, 0, 0, 0.08);
 }
 
+/* Theme-independent tokens (Instagram card) */
+:root {
+  --media-backdrop: #0a0a0a;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --fs-caption: 0.75rem;
+  --fw-semibold: 600;
+  --ls-wide: 0.05em;
+  --transition-duration-fast: 150ms;
+  --transition-duration-base: 300ms;
+  --ease-out-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-fade-in: ig-fade-in var(--transition-duration-base) ease-out both;
+}
+
+@keyframes ig-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -936,11 +959,11 @@ body {
   opacity: 1;
 }
 
-/* Gallery Items */
+/* Gallery Items ("more" tile, same box as the Instagram card) */
 .gallery-item {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   background-color: var(--background-secondary);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -968,6 +991,34 @@ body {
   color: var(--muted);
   text-align: center;
   padding: 1rem;
+}
+
+/* No feed for the artist: link to the Instagram profile */
+.gallery-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 400px;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-empty-link {
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.gallery-empty-link:hover {
+  background: var(--accent);
+  color: var(--background);
 }
 
 @media (max-width: 768px) {
@@ -1017,8 +1068,8 @@ body {
 }
 
 .skeleton-card {
-  aspect-ratio: 1 / 1;
-  border-radius: 0.5rem;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-xl);
 }
 
 
@@ -1152,6 +1203,349 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
   }
+}
+
+/* ============================================
+   INSTAGRAM CARD
+   ============================================ */
+
+/* Not in a layer: the unlayered `*` reset above would beat any layered rule
+   (paddings, the dialog's `margin: auto`). */
+/* --------------
+ * Instagram card
+ * -------------- */
+
+.ig-icon {
+  flex: none;
+  inline-size: 1.1em;
+  block-size: 1.1em;
+  fill: currentColor;
+}
+
+.ig-card {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 4 / 5; /* reserved box: the cover never shifts the layout */
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--background-secondary);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent; /* the hover lift is the feedback */
+  /* Only translate and box-shadow move: no layout, no CLS. */
+  transition:
+    translate var(--transition-duration-base) var(--ease-spring),
+    box-shadow var(--transition-duration-base) var(--ease-out-smooth);
+}
+
+.ig-card:hover,
+.ig-card:focus-visible {
+  translate: 0 -4px;
+  box-shadow: var(--shadow-lg);
+}
+
+.ig-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-xl);
+}
+
+.ig-card-cover {
+  object-fit: cover;
+}
+
+/* Pills laid over the media: same colors as .btn--light (page background,
+   ink text, accent border), so the accent icons keep the contrast measured
+   for the page whatever the brand. 85%: barely see-through over any photo. */
+.ig-card-overlay,
+.ig-carousel-counter {
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--background) 85%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--foreground);
+}
+
+.ig-card-overlay {
+  position: absolute;
+  inset-inline-end: 0.6rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.ig-card-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+.ig-card-type .ig-icon,
+.ig-card-stat .ig-icon {
+  color: var(--accent);
+}
+
+/* Icon-only round badge on the card (the dialog footer keeps the label). */
+.ig-card-overlay.ig-card-type {
+  inset-block-start: 0.6rem;
+  padding: 0.4rem;
+}
+
+.ig-card-overlay.ig-card-type .ig-icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.ig-card-stats {
+  inset-block-end: 0.6rem;
+  inset-inline: 0.6rem auto; /* bottom-left, the type badge stays top-right */
+  display: inline-flex;
+  gap: 0.75rem;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+}
+
+.ig-card-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ---- Dialog ------------------------------------------------------------ */
+
+.ig-dialog {
+  margin: auto;
+  inline-size: min(100% - 2rem, 36rem);
+  max-block-size: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.ig-dialog::backdrop {
+  background: color-mix(in srgb, var(--media-backdrop) 75%, transparent);
+}
+
+.ig-dialog[open] {
+  animation: var(--animate-fade-in);
+}
+
+.ig-dialog-body {
+  position: relative;
+}
+
+.ig-dialog-frame {
+  position: relative;
+  inline-size: 100%;
+  aspect-ratio: 4 / 5;
+  max-block-size: calc(100dvh - 6rem);
+  background: var(--media-backdrop);
+}
+
+.ig-dialog-media {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ig-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+}
+
+.ig-dialog-footer .ig-card-type {
+  color: var(--muted);
+}
+
+.ig-dialog-link {
+  color: var(--accent);
+  font-weight: var(--fw-semibold);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.ig-dialog-link:hover {
+  color: var(--accent-hover);
+}
+
+/* Reel without its video: a call to action centered on the cover, in the
+   same colors as the overlays (light button). */
+.ig-dialog-play {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--background) 85%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--foreground);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+  touch-action: manipulation;
+  transition:
+    background-color var(--transition-duration-fast) var(--ease-out-smooth),
+    border-color var(--transition-duration-fast) var(--ease-out-smooth);
+}
+
+.ig-dialog-play .ig-icon {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  color: var(--accent);
+}
+
+.ig-dialog-play:hover {
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  background: var(--background);
+}
+
+/* Round controls laid over the media. */
+.ig-dialog-close,
+.ig-carousel-nav {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--background) 85%, transparent);
+  color: var(--foreground);
+  font-size: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--transition-duration-fast) var(--ease-out-smooth),
+    opacity var(--transition-duration-fast) var(--ease-out-smooth);
+}
+
+.ig-dialog-close:hover,
+.ig-carousel-nav:hover:not([aria-disabled='true']) {
+  background: var(--background);
+}
+
+.ig-dialog-close {
+  inset-block-start: 0.6rem;
+  inset-inline-end: 0.6rem;
+  z-index: 2;
+}
+
+/* ---- Carousel ---------------------------------------------------------- */
+
+/* Pinned to the frame: a percentage height against the frame's
+   aspect-ratio height can resolve to 0 (slides would collapse). */
+.ig-carousel {
+  position: absolute;
+  inset: 0;
+}
+
+.ig-carousel-track {
+  display: flex;
+  block-size: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.ig-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ig-carousel-track { scroll-behavior: smooth; }
+}
+
+.ig-carousel-slide {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.ig-carousel-nav {
+  inset-block-start: 50%;
+  translate: 0 -50%;
+}
+
+.ig-carousel-nav--prev { inset-inline-start: 0.6rem; }
+.ig-carousel-nav--next { inset-inline-end: 0.6rem; }
+
+/* Still visible and focusable: hiding it would leave the focus on nothing. */
+.ig-carousel-nav[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ig-carousel-counter {
+  position: absolute;
+  inset-block-start: 0.9rem;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  padding: 0.2rem 0.6rem;
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Phone: the dialog takes the whole screen. */
+@media (max-width: 40rem) {
+  .ig-dialog {
+    inline-size: 100%;
+    max-inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    border-radius: 0;
+  }
+
+  /* Notch / home bar: effective once the viewport uses viewport-fit=cover. */
+  .ig-dialog-body {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
+  }
+
+  .ig-dialog-close {
+    inset-block-start: calc(0.6rem + env(safe-area-inset-top, 0px));
+  }
+
+  .ig-dialog-frame {
+    flex: 1;
+    aspect-ratio: auto;
+    max-block-size: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-card { transition: none; }
+  .ig-card:hover,
+  .ig-card:focus-visible { translate: none; }
+  .ig-dialog[open] { animation: none; }
 }
 
 /* ============================================

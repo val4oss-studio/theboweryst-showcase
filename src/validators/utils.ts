@@ -1,19 +1,19 @@
 import { z } from 'zod';
-import { locales } from '@/config/locales'
+import { locales, type Locale } from '@/config/locales'
 
 export const localizedTextSchema = z.object(
   Object.fromEntries(locales.map(locale => [
     locale,
     z.string().min(1, `${locale} translation cannot be empty`).trim(),
-  ]))
-) as z.ZodType<Record<typeof locales[number], string>>;
+  ])) as Record<Locale, z.ZodString>
+);
 
 export const partialLocalizedTextSchema = z.object(
   Object.fromEntries(locales.map(locale => [
     locale,
     z.string().min(1, `${locale} translation cannot be empty`).trim().optional(),
-  ]))
-) as z.ZodType<Partial<Record<typeof locales[number], string>>>;
+  ])) as Record<Locale, z.ZodOptional<z.ZodString>>
+);
 
 
 /**

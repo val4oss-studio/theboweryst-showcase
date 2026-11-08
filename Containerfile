@@ -35,14 +35,8 @@ RUN npx esbuild \
       src/scripts/artist/list.ts \
       src/scripts/artist/get.ts \
       src/scripts/artist/remove.ts \
-      src/scripts/post/add.ts \
-      src/scripts/post/list.ts \
-      src/scripts/post/get.ts \
-      src/scripts/post/remove.ts \
-      src/scripts/sync/syncInstagram.ts \
       --bundle --platform=node \
       --external:better-sqlite3 \
-      --external:sharp \
       --outdir=dist/scripts && \
     npx esbuild \
       src/data/db/scripts/migrate.ts \
@@ -64,9 +58,6 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_DIR=/app/database
-ENV SYNC_HTML_DIR=/app/sync-html
-#ENV SYNC_POSTS_DIR=/app/public/posts
-ENV SYNC_POSTS_DIR=/app/data/posts
 
 # Create app user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -85,8 +76,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/public/robots.txt ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst_background_web.webm ./public
 
 # Create necessary directories and set permissions
-RUN mkdir -p /app/database /app/sync-html /app/public/posts /app/.next/cache/images && \
-    chown nextjs:nodejs /app/database /app/sync-html /app/public/posts /app/.next/cache/images
+# .next/cache holds the image cache and the Instagram feed cache (fetch-cache)
+RUN mkdir -p /app/database /app/.next/cache/images && \
+    chown -R nextjs:nodejs /app/database /app/.next/cache
 
 USER nextjs
 

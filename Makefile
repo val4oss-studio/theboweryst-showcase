@@ -8,8 +8,6 @@ IMG         ?= $(IMG_NAME)
 CTN_NAME    := theboweryst-showcase
 PORT        := 3000
 VOL_DB      := $(BUILD_D)/database
-VOL_SYNC    := $(BUILD_D)/sync-html
-VOL_POSTS   := $(BUILD_D)/posts
 
 # -- Targets --------------------------------------------------
 .PHONY: help build test run stop clean logs dev
@@ -39,19 +37,15 @@ run: ## Run container. Use IMG= to override image (e.g. IMG=$(REGISTRY)/$(IMG_NA
 	    echo "Image $(IMG_NAME) not found, run 'make build' first"; \
 	    exit 1; \
 	fi
-	@mkdir -p $(VOL_DB) $(VOL_SYNC) $(VOL_POSTS)
-	podman unshare chown -R 1001:1001 $(VOL_DB) $(VOL_POSTS)
+	@mkdir -p $(VOL_DB)
+	podman unshare chown -R 1001:1001 $(VOL_DB)
 	podman run -d \
 		--name $(CTN_NAME) \
 		-p $(PORT):$(PORT) \
 		--replace \
 		-v $(CURDIR)/$(VOL_DB):/app/database:Z \
-		-v $(CURDIR)/$(VOL_SYNC):/app/sync-html:Z \
-		-v $(CURDIR)/$(VOL_POSTS):/app/data/posts:Z \
 		$(IMG)
 	@echo "✅ Site Available on http://localhost:$(PORT)"
-	@cp src/scripts/sync/*.html $(VOL_SYNC)/ 2>/dev/null || true
-	podman exec $(CTN_NAME) node scripts/sync/syncInstagram
 
 stop: ## Stop and remove container
 	@if podman ps -q --filter name=$(CTN_NAME) \
@@ -67,10 +61,7 @@ logs: ## Print log container
 
 clean: stop ## Remove image, build artifacts and volumes
 	@rm -f $(BUILD_D)/$(IMG_NAME).tar $(BUILD_D)/*.log
-	@for d in $(VOL_DB) $(VOL_POSTS); do \
-	    [ -d "$$d" ] && podman unshare rm -rf "$$d" || true; \
-	done
-	@[ -d "$(VOL_SYNC)" ] && rm -rf "$(VOL_SYNC)" || true
+	@[ -d "$(VOL_DB)" ] && podman unshare rm -rf "$(VOL_DB)" || true
 	@if podman image exists $(IMG_NAME); then \
 	    podman rmi $(IMG_NAME); \
 	fi

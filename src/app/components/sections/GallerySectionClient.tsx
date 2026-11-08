@@ -4,19 +4,24 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, MoreHorizontal } from "lucide-react";
 import { useI18n } from "@/app/i18n/provider";
+import { InstagramCard } from "@/app/components/layout/InstagramCard";
 import type { ArtistEntity } from '@/domain/entities/artistEntity';
-import type { PostEntity } from '@/domain/entities/postEntity';
-import { getArtistProfileImage } from '@/domain/entities/artistEntity';
+import type { InstagramFeed } from '@/content/instagram';
+import {
+  getArtistInstagramUrl,
+  getArtistProfileImage,
+} from '@/domain/entities/artistEntity';
 
 interface GallerySectionClientProps {
   artists: ArtistEntity[];
-  postsByArtistId: Record<number, PostEntity[]>;
+  /** `null` when val4oss-media could not give the feed of the artist. */
+  feedsByArtistId: Record<number, InstagramFeed | null>;
 }
 
 const AUTO_CYCLE_INTERVAL = 5000; // 5 seconds
 const PREVIEW_COUNT = 12;
 
-export function GallerySectionClient({ artists, postsByArtistId }: GallerySectionClientProps) {
+export function GallerySectionClient({ artists, feedsByArtistId }: GallerySectionClientProps) {
   const { t } = useI18n();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
@@ -54,18 +59,23 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
       setFadeState('in');
     }, 300);
   };
-  
+
   // Block the background scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isModalOpen]);
 
+  // Opening a post stops the cycle: switching artist would unmount its dialog.
+  const stopAutoPlay = () => setIsAutoPlay(false);
 
   const currentArtist = artists[selectedIndex];
-  const currentPosts = currentArtist ? (postsByArtistId[currentArtist.id] ?? []) : [];
+  const currentFeed = currentArtist ? feedsByArtistId[currentArtist.id] : null;
+  const currentPosts = currentFeed?.posts ?? [];
   const previewPosts = currentPosts.slice(0, PREVIEW_COUNT);
   const hasMore = currentPosts.length > PREVIEW_COUNT;
+  const profileUrl = currentFeed?.profileUrl
+    ?? (currentArtist ? getArtistInstagramUrl(currentArtist) : undefined);
 
   return (
     <div className="section-container">
@@ -79,7 +89,7 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
             key={artist.id}
             onClick={() => handleArtistClick(index)}
             className={`artist-avatar ${selectedIndex === index ? 'active' : ''}`}
-            aria-label={`View ${artist.username}'s gallery`}
+            aria-label={t.gallery.viewArtist.replace('{name}', artist.username)}
           >
             <div className="artist-avatar-image-wrapper">
               <Image
@@ -95,58 +105,56 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
         ))}
       </div>
 
-      <div className={`gallery-grid gallery-fade-${fadeState}`}>
-        
-        {previewPosts.map((post, index) => {
-          const isMoreTrigger = hasMore && index === PREVIEW_COUNT - 1;
-
-          if (isMoreTrigger) {
-            return (
-              <button
-                key={post.id}
-                onClick={() => {setIsModalOpen(true); setIsAutoPlay(false);}}
-                className="gallery-item gallery-item-more"
-                aria-label="Voir tous les posts"
-              >
-                <Image
-                  src={post.coverImageUrl}
-                  alt=""
-                  fill
-                  sizes="(max-width: 768px) 150px, 250px"
-                  className="gallery-image"
-                  unoptimized
-                  loading="eager"
-                />
-                <div className="gallery-more-overlay">
-                  <MoreHorizontal className="gallery-more-icon" />
-                </div>
-              </button>
-            );
-          }
-
-          return (
+      {currentPosts.length === 0 ? (
+        <div className={`gallery-empty gallery-fade-${fadeState}`}>
+          <p className="gallery-placeholder">
+            {t.gallery.unavailable.replace('{name}', currentArtist?.username ?? '')}
+          </p>
+          {profileUrl && (
             <a
-              key={post.id}
-              href={post.postUrl}
+              href={profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="gallery-item"
-              aria-label={post.description ?? `Post by ${currentArtist?.username}`}
+              className="gallery-empty-link"
             >
-              <Image
-                src={post.coverImageUrl}
-                alt={post.description ?? `Post by ${currentArtist?.username}`}
-                fill
-                sizes="(max-width: 768px) 150px, 250px"
-                className="gallery-image"
-                unoptimized
-                loading="eager"
-              />
+              {t.gallery.viewProfile}
             </a>
-          );
-        })}
+          )}
+        </div>
+      ) : (
+        <div
+          className={`gallery-grid gallery-fade-${fadeState}`}
+          onClickCapture={stopAutoPlay}
+        >
+          {previewPosts.map((post, index) => {
+            const isMoreTrigger = hasMore && index === PREVIEW_COUNT - 1;
 
-      </div>
+            if (isMoreTrigger) {
+              return (
+                <button
+                  key={post.shortcode}
+                  onClick={() => setIsModalOpen(true)}
+                  className="gallery-item gallery-item-more"
+                  aria-label={t.gallery.viewAll}
+                >
+                  <Image
+                    src={post.cover}
+                    alt=""
+                    fill
+                    sizes="(max-width: 40rem) 50vw, 20rem"
+                    className="gallery-image"
+                  />
+                  <div className="gallery-more-overlay">
+                    <MoreHorizontal className="gallery-more-icon" />
+                  </div>
+                </button>
+              );
+            }
+
+            return <InstagramCard key={post.shortcode} post={post} />;
+          })}
+        </div>
+      )}
 
       {/* Modal all posts */}
       {isModalOpen && (
@@ -155,7 +163,7 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
           onClick={() => setIsModalOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label="Tous les posts"
+          aria-label={t.gallery.allPosts}
         >
           <div
             className="gallery-modal-content"
@@ -168,30 +176,14 @@ export function GallerySectionClient({ artists, postsByArtistId }: GallerySectio
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="gallery-modal-close"
-                aria-label="Fermer"
+                aria-label={t.gallery.close}
               >
                 <X size={18} />
               </button>
             </div>
             <div className="gallery-modal-grid">
               {currentPosts.map((post) => (
-                <a
-                  key={post.id}
-                  href={post.postUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="gallery-item"
-                  aria-label={post.description ?? `Post by ${currentArtist?.username}`}
-                >
-                  <Image
-                    src={post.coverImageUrl}
-                    alt={post.description ?? `Post by ${currentArtist?.username}`}
-                    fill
-                    sizes="(max-width: 768px) 150px, 250px"
-                    className="gallery-image"
-                    unoptimized
-                  />
-                </a>
+                <InstagramCard key={post.shortcode} post={post} />
               ))}
             </div>
           </div>

@@ -37,7 +37,31 @@
   },
   "gallery": {
     "title": "Gallery",
-    "placeholder": "Tattoo Work"
+    "placeholder": "Tattoo Work",
+    "viewArtist": "View {name}'s gallery",
+    "viewAll": "View all posts",
+    "allPosts": "All posts",
+    "close": "Close",
+    "unavailable": "{name}'s latest work is on Instagram.",
+    "viewProfile": "View Instagram profile",
+    "post": {
+      "typeLabels": {
+        "image": "Image",
+        "carousel": "Carousel",
+        "reel": "Reel"
+      },
+      "viewPost": "View post",
+      "watchReel": "Watch the reel on Instagram",
+      "close": "Close",
+      "previous": "Previous media",
+      "next": "Next media",
+      "likes": "likes",
+      "comments": "comments",
+      "coverAlt": "Instagram post",
+      "newTab": "(new tab)",
+      "carousel": "Post media",
+      "slideOf": "of"
+    }
   },
   "contact": {
     "title": "Contact Us",

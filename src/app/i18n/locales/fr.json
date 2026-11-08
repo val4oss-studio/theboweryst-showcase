@@ -37,7 +37,31 @@
   },
   "gallery": {
     "title": "Galerie",
-    "placeholder": "Œuvre de Tatouage"
+    "placeholder": "Œuvre de Tatouage",
+    "viewArtist": "Voir la galerie de {name}",
+    "viewAll": "Voir tous les posts",
+    "allPosts": "Tous les posts",
+    "close": "Fermer",
+    "unavailable": "Les dernières réalisations de {name} sont à retrouver sur Instagram.",
+    "viewProfile": "Voir le profil Instagram",
+    "post": {
+      "typeLabels": {
+        "image": "Image",
+        "carousel": "Carrousel",
+        "reel": "Reel"
+      },
+      "viewPost": "Voir le post",
+      "watchReel": "Voir le reel sur Instagram",
+      "close": "Fermer",
+      "previous": "Média précédent",
+      "next": "Média suivant",
+      "likes": "J’aime",
+      "comments": "commentaires",
+      "coverAlt": "Post Instagram",
+      "newTab": "(nouvel onglet)",
+      "carousel": "Médias du post",
+      "slideOf": "sur"
+    }
   },
   "contact": {
     "title": "Contactez-nous",
