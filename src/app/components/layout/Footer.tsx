@@ -138,7 +138,17 @@ export function Footer({ artists }: FooterProps) {
           © {new Date().getFullYear()} {shop.name}. {t.footer.rights}
         </p>
         <div className="footer-credits">
-          <span>{t.footer.madeWith} ❤️ {t.footer.inLorient}</span>
+          <span>
+            {t.footer.madeBy}{' '}
+            <a
+              href="https://studio.val4oss.com"
+              target="_blank"
+              rel="noopener"
+              className="footer-credits-link"
+            >
+              val4oss-studio
+            </a>
+          </span>
         </div>
       </div>
 

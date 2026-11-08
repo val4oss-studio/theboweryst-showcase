@@ -2057,6 +2057,19 @@ body {
   display: inline-block;
 }
 
+.footer-credits-link {
+  color: var(--foreground);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 0.2s ease;
+}
+
+.footer-credits-link:hover {
+  color: var(--accent);
+}
+
 /* Footer responsive */
 @media (max-width: 768px) {
   .footer {
