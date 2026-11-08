@@ -4,16 +4,14 @@ import { useI18n } from '@/app/i18n/provider';
 import { FaInstagram, FaFacebook } from 'react-icons/fa';
 import { MapPin, Clock } from 'lucide-react';
 import Image from 'next/image';
-import type { ShopEntity } from '@/domain/entities/shopEntity';
-import type { ArtistEntity } from '@/domain/entities/artistEntity';
-import { getArtistInstagramUrl } from '@/domain/entities/artistEntity';
+import { getArtistInstagramUrl, type Artist } from '@/content/artists';
+import { shop } from '@/content/shop';
 
 interface FooterProps {
-  shop: ShopEntity;
-  artists: ArtistEntity[];
+  artists: Artist[];
 }
 
-export function Footer({ shop, artists }: FooterProps) {
+export function Footer({ artists }: FooterProps) {
   const { t, locale } = useI18n();
 
   const quickLinks = [
@@ -116,16 +114,16 @@ export function Footer({ shop, artists }: FooterProps) {
               const igUrl = getArtistInstagramUrl(artist);
               if (!igUrl) return null;
               return (
-                <li key={artist.username}>
+                <li key={artist.name}>
                   <a
                     href={igUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="footer-social-link"
-                    aria-label={artist.username}
+                    aria-label={artist.name}
                   >
                     <FaInstagram size={20} />
-                    <span>{artist.username}</span>
+                    <span>{artist.name}</span>
                   </a>
                 </li>
               );

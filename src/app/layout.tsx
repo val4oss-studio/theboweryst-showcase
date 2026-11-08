@@ -4,7 +4,8 @@ import "./globals.css";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { defaultLocale, locales } from "@/config/locales";
-import { LOCALE_HEADER, SEO_TEXT, SITE_URL, STUDIO_PLACE } from "@/config/seo";
+import { LOCALE_HEADER, SEO_TEXT, SITE_URL } from "@/config/seo";
+import { shop } from "@/content/shop";
 import { VideoBackground } from "@/app/components/layout/VideoBackground";
 
 export const viewport: Viewport = {
@@ -54,10 +55,10 @@ export const metadata: Metadata = {
   },
   category: 'business',
   other: {
-    'geo.region': STUDIO_PLACE.regionCode,
+    'geo.region': shop.regionCode,
     'geo.placename': 'Lorient',
-    'geo.position': `${STUDIO_PLACE.latitude};${STUDIO_PLACE.longitude}`,
-    ICBM: `${STUDIO_PLACE.latitude}, ${STUDIO_PLACE.longitude}`,
+    'geo.position': `${shop.latitude};${shop.longitude}`,
+    ICBM: `${shop.latitude}, ${shop.longitude}`,
   },
 };
 

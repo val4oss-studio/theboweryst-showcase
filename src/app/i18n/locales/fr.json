@@ -37,7 +37,11 @@
     },
     "intro": "Les trois tatoueuses du salon {name} à Lorient : {artists}.",
     "and": "et",
-    "cardAlt": "{name}, tatoueuse au salon {shop} à Lorient"
+    "cardAlt": "{name}, tatoueuse au salon {shop} à Lorient",
+    "guest": "Guest",
+    "guestDates": "En guest : {dates}",
+    "guestAlt": "{name}, tatoueuse en guest au salon {shop} à Lorient",
+    "guestIntro": "En guest au salon : {guests}."
   },
   "gallery": {
     "title": "Galerie",

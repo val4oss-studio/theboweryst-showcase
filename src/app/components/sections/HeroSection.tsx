@@ -5,14 +5,13 @@ import Image from "next/image";
 import { useI18n } from "@/app/i18n/provider";
 import { ArrowDown, MapPin } from "lucide-react";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
-import type { ShopEntity } from "@/domain/entities/shopEntity";
+import { shop } from "@/content/shop";
 
 interface HeroSectionProps {
   id: string;
-  shop: ShopEntity;
 }
 
-export function HeroSection({id, shop}: HeroSectionProps) {
+export function HeroSection({ id }: HeroSectionProps) {
   const { t, locale } = useI18n();
   const [isScrolled, setIsScrolled] = useState(false);
 

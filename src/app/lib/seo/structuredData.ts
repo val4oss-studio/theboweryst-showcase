@@ -1,45 +1,64 @@
 import type { Locale } from '@/config/locales';
-import { OG_IMAGE, SEO_TEXT, SITE_URL, STUDIO_PLACE, localeUrl } from '@/config/seo';
-import type { ArtistEntity } from '@/domain/entities/artistEntity';
-import { getArtistInstagramUrl } from '@/domain/entities/artistEntity';
-import type { ShopEntity } from '@/domain/entities/shopEntity';
+import { OG_IMAGE, SEO_TEXT, SITE_URL, localeUrl } from '@/config/seo';
+import { getArtistInstagramUrl, type Artist } from '@/content/artists';
+import type { Guest } from '@/content/guests';
+import { shop } from '@/content/shop';
 
 const STUDIO_ID = `${SITE_URL}/#studio`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
-
-function artistId(artist: ArtistEntity): string {
-  return `${SITE_URL}/#artist-${artist.instagramName || artist.id}`;
-}
 
 function absoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
+type Node = { '@id': string } & Record<string, unknown>;
+
+function person(artist: Artist, locale: Locale): Node {
+  return {
+    '@type': 'Person',
+    '@id': `${SITE_URL}/#artist-${artist.id}`,
+    name: artist.name,
+    alternateName: [artist.instagram, `@${artist.instagram}`],
+    sameAs: [getArtistInstagramUrl(artist)],
+    jobTitle: SEO_TEXT.artistJobTitle[locale],
+    description: artist.bio[locale],
+    ...(artist.photo && { image: absoluteUrl(artist.photo) }),
+  };
+}
+
 /**
- * schema.org graph of the home page: the website, the studio and its
- * artists, each artist linked to the studio (`worksFor`) and to her
- * Instagram account, so search engines and AI agents tie them together.
+ * schema.org graph of the home page: the website, the studio, its resident
+ * artists (each linked to the studio by `worksFor` and to her Instagram)
+ * and the guest spots as events at the studio, so search engines and AI
+ * agents tie them together.
  */
 export function buildHomeStructuredData(
   locale: Locale,
-  shop: ShopEntity,
-  artists: ArtistEntity[]
+  residents: Artist[],
+  guests: Guest[]
 ): Record<string, unknown> {
   const pageUrl = localeUrl(locale);
+  const studio = { '@id': STUDIO_ID };
 
-  const people = artists.map((artist) => ({
-    '@type': 'Person',
-    '@id': artistId(artist),
-    name: artist.username,
-    ...(artist.instagramName && {
-      alternateName: [artist.instagramName, `@${artist.instagramName}`],
-      sameAs: [getArtistInstagramUrl(artist)],
-    }),
-    jobTitle: SEO_TEXT.artistJobTitle[locale],
-    description: artist.bio[locale],
-    ...(artist.profilePicture && { image: absoluteUrl(artist.profilePicture) }),
-    worksFor: { '@id': STUDIO_ID },
-    workLocation: { '@id': STUDIO_ID },
+  const residentNodes = residents.map((artist) => ({
+    ...person(artist, locale),
+    worksFor: studio,
+    workLocation: studio,
+  }));
+  const guestNodes = guests.map((guest) => person(guest, locale));
+  const guestSpots = guests.map((guest, index) => ({
+    '@type': 'Event',
+    '@id': `${SITE_URL}/#guest-${guest.id}-${guest.from}`,
+    name: SEO_TEXT.guestSpot[locale]
+      .replace('{name}', guest.name)
+      .replace('{shop}', shop.name),
+    startDate: guest.from,
+    endDate: guest.to,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: studio,
+    organizer: studio,
+    performer: { '@id': guestNodes[index]['@id'] },
   }));
 
   return {
@@ -50,9 +69,9 @@ export function buildHomeStructuredData(
         '@id': WEBSITE_ID,
         url: `${SITE_URL}/`,
         name: shop.name,
-        alternateName: 'The Boweryst',
+        alternateName: shop.alternateNames[0],
         inLanguage: ['fr', 'en'],
-        publisher: { '@id': STUDIO_ID },
+        publisher: studio,
       },
       {
         '@type': 'WebPage',
@@ -62,14 +81,14 @@ export function buildHomeStructuredData(
         description: SEO_TEXT.description[locale],
         inLanguage: locale,
         isPartOf: { '@id': WEBSITE_ID },
-        about: { '@id': STUDIO_ID },
-        mentions: people.map((person) => ({ '@id': person['@id'] })),
+        about: studio,
+        mentions: [...residentNodes, ...guestNodes].map((node) => ({ '@id': node['@id'] })),
       },
       {
         '@type': 'TattooParlor',
         '@id': STUDIO_ID,
         name: shop.name,
-        alternateName: ['The Boweryst', 'The Bowery Street Tattoo'],
+        alternateName: shop.alternateNames,
         description: shop.description[locale],
         url: pageUrl,
         logo: absoluteUrl('/theboweryst-logo.png'),
@@ -79,27 +98,32 @@ export function buildHomeStructuredData(
           streetAddress: shop.addressStreet,
           postalCode: shop.addressZip,
           addressLocality: shop.addressCity,
-          addressRegion: STUDIO_PLACE.region,
+          addressRegion: shop.addressRegion,
           addressCountry: 'FR',
         },
         geo: {
           '@type': 'GeoCoordinates',
-          latitude: STUDIO_PLACE.latitude,
-          longitude: STUDIO_PLACE.longitude,
+          latitude: shop.latitude,
+          longitude: shop.longitude,
         },
         hasMap: shop.mapUrl,
-        areaServed: STUDIO_PLACE.areaServed.map((name) => ({ '@type': 'Place', name })),
+        areaServed: shop.areaServed.map((name) => ({ '@type': 'Place', name })),
         openingHoursSpecification: {
           '@type': 'OpeningHoursSpecification',
-          dayOfWeek: STUDIO_PLACE.openingHours.days,
-          opens: STUDIO_PLACE.openingHours.opens,
-          closes: STUDIO_PLACE.openingHours.closes,
+          dayOfWeek: shop.openingHours.days,
+          opens: shop.openingHours.opens,
+          closes: shop.openingHours.closes,
         },
-        foundingDate: STUDIO_PLACE.foundingDate,
+        foundingDate: shop.foundingDate,
         sameAs: [shop.instagramUrl, shop.facebookUrl],
-        employee: people.map((person) => ({ '@id': person['@id'] })),
+        employee: residentNodes.map((node) => ({ '@id': node['@id'] })),
+        ...(guestSpots.length > 0 && {
+          event: guestSpots.map((spot) => ({ '@id': spot['@id'] })),
+        }),
       },
-      ...people,
+      ...residentNodes,
+      ...guestNodes,
+      ...guestSpots,
     ],
   };
 }

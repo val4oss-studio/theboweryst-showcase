@@ -5,17 +5,17 @@ import Image from "next/image";
 import { X, MoreHorizontal } from "lucide-react";
 import { useI18n } from "@/app/i18n/provider";
 import { InstagramCard } from "@/app/components/layout/InstagramCard";
-import type { ArtistEntity } from '@/domain/entities/artistEntity';
-import type { InstagramFeed } from '@/content/instagram';
 import {
   getArtistInstagramUrl,
-  getArtistProfileImage,
-} from '@/domain/entities/artistEntity';
+  getArtistPhoto,
+  type Artist,
+} from '@/content/artists';
+import type { InstagramFeed } from '@/content/instagram';
 
 interface GallerySectionClientProps {
-  artists: ArtistEntity[];
+  artists: Artist[];
   /** `null` when val4oss-media could not give the feed of the artist. */
-  feedsByArtistId: Record<number, InstagramFeed | null>;
+  feedsByArtistId: Record<string, InstagramFeed | null>;
 }
 
 const AUTO_CYCLE_INTERVAL = 5000; // 5 seconds
@@ -89,18 +89,18 @@ export function GallerySectionClient({ artists, feedsByArtistId }: GallerySectio
             key={artist.id}
             onClick={() => handleArtistClick(index)}
             className={`artist-avatar ${selectedIndex === index ? 'active' : ''}`}
-            aria-label={t.gallery.viewArtist.replace('{name}', artist.username)}
+            aria-label={t.gallery.viewArtist.replace('{name}', artist.name)}
           >
             <div className="artist-avatar-image-wrapper">
               <Image
-                src={getArtistProfileImage(artist)}
-                alt={artist.username}
+                src={getArtistPhoto(artist)}
+                alt={artist.name}
                 width={80}
                 height={80}
                 className="artist-avatar-image"
               />
             </div>
-            <span className="artist-avatar-name">{artist.username}</span>
+            <span className="artist-avatar-name">{artist.name}</span>
           </button>
         ))}
       </div>
@@ -108,7 +108,7 @@ export function GallerySectionClient({ artists, feedsByArtistId }: GallerySectio
       {currentPosts.length === 0 ? (
         <div className={`gallery-empty gallery-fade-${fadeState}`}>
           <p className="gallery-placeholder">
-            {t.gallery.unavailable.replace('{name}', currentArtist?.username ?? '')}
+            {t.gallery.unavailable.replace('{name}', currentArtist?.name ?? '')}
           </p>
           {profileUrl && (
             <a
@@ -171,7 +171,7 @@ export function GallerySectionClient({ artists, feedsByArtistId }: GallerySectio
           >
             <div className="gallery-modal-header">
               <h3 className="gallery-modal-title">
-                {currentArtist?.username} — {currentPosts.length} posts
+                {currentArtist?.name} — {currentPosts.length} posts
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}

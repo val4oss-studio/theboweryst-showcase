@@ -7,21 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate:api": "openapi-typescript ${VAL4OSS_MEDIA_URL:-https://media.val4oss.com}/v1/openapi.json -o src/lib/val4ossMedia/api.d.ts",
-    "db:migrate": "tsx src/data/db/scripts/migrate.ts",
-    "db:seed": "tsx src/data/db/scripts/seed.ts",
-    "db:reset": "tsx src/data/db/scripts/reset.ts",
-    "artist:add": "tsx src/scripts/artist/add.ts",
-    "artist:list": "tsx src/scripts/artist/list.ts",
-    "artist:get": "tsx src/scripts/artist/get.ts",
-    "artist:remove": "tsx src/scripts/artist/remove.ts",
-    "shop:set": "tsx src/scripts/shop/set.ts",
-    "shop:update": "tsx src/scripts/shop/update.ts",
-    "shop:get": "tsx src/scripts/shop/get.ts",
-    "shop:remove": "tsx src/scripts/shop/remove.ts"
+    "generate:api": "openapi-typescript ${VAL4OSS_MEDIA_URL:-https://media.val4oss.com}/v1/openapi.json -o src/lib/val4ossMedia/api.d.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
     "lucide-react": "^0.556.0",
     "next": "^16.1.6",
     "react": "19.2.0",
@@ -32,7 +20,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -40,10 +27,6 @@
     "eslint-config-next": "16.0.7",
     "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4",
-    "tsx": "^4.21.0",
     "typescript": "^5"
-  },
-  "allowScripts": {
-    "better-sqlite3@12.8.0": true
   }
 }

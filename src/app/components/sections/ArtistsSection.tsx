@@ -3,24 +3,32 @@
 import Image from "next/image";
 import { ArtistCard } from "@/app/components/layout/ArtistCard";
 import { useI18n } from "@/app/i18n/provider";
-import { ArtistEntity } from "@/domain/entities/artistEntity";
+import type { Artist } from "@/content/artists";
+import { formatGuestDates, type Guest } from "@/content/guests";
+import { shop } from "@/content/shop";
 
 interface ArtistsSectionProps {
   id: string;
-  shopName: string;
-  artists: ArtistEntity[];
+  artists: Artist[];
+  /** Current and upcoming guest spots, shown after the residents. */
+  guests: Guest[];
 }
 
-export function ArtistsSection({ id, shopName, artists }: ArtistsSectionProps) {
-  const { t } = useI18n();
-  const names = artists.map((artist) =>
-    artist.instagramName
-      ? `${artist.username} (@${artist.instagramName})`
-      : artist.username
+export function ArtistsSection({ id, artists, guests }: ArtistsSectionProps) {
+  const { t, locale } = useI18n();
+
+  const joinNames = (names: string[]) =>
+    names.length > 1
+      ? `${names.slice(0, -1).join(', ')} ${t.artists.and} ${names[names.length - 1]}`
+      : names.join('');
+  const artistList = joinNames(
+    artists.map((artist) => `${artist.name} (@${artist.instagram})`)
   );
-  const artistList = names.length > 1
-    ? `${names.slice(0, -1).join(', ')} ${t.artists.and} ${names[names.length - 1]}`
-    : names.join('');
+  const guestList = joinNames(
+    guests.map((guest) =>
+      `${guest.name} (@${guest.instagram}), ${formatGuestDates(guest, locale)}`
+    )
+  );
 
   return (
     <section id={id} className="section">
@@ -29,8 +37,11 @@ export function ArtistsSection({ id, shopName, artists }: ArtistsSectionProps) {
           <h2 className="section-title">{t.artists.title}</h2>
           <p className="section-intro">
             {t.artists.intro
-              .replace('{name}', shopName)
+              .replace('{name}', shop.name)
               .replace('{artists}', artistList)}
+            {guests.length > 0 && (
+              <> {t.artists.guestIntro.replace('{guests}', guestList)}</>
+            )}
           </p>
         </div>
         <Image
@@ -43,12 +54,10 @@ export function ArtistsSection({ id, shopName, artists }: ArtistsSectionProps) {
         />
         <div className="artists-grid">
           {artists.map((artist, index) => (
-            <ArtistCard
-              key={artist.username}
-              artist={artist}
-              shopName={shopName}
-              priority={index === 0}
-            />
+            <ArtistCard key={artist.id} artist={artist} priority={index === 0} />
+          ))}
+          {guests.map((guest) => (
+            <ArtistCard key={`${guest.id}-${guest.from}`} artist={guest} guest={guest} />
           ))}
         </div>
       </div>

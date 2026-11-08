@@ -1,9 +1,8 @@
 import { defaultLocale, type Locale, type LocalizedText } from '@/config/locales';
 
 /**
- * SEO data of the site that the database does not hold: canonical URLs,
- * localized titles and descriptions, place and opening hours for the
- * structured data. Shop and artists data come from the database.
+ * SEO data of the site: canonical URLs, localized titles, descriptions and
+ * keywords. The studio and its artists come from `src/content/`.
  */
 export const SITE_URL = 'https://theboweryst.fr';
 
@@ -40,6 +39,10 @@ export const SEO_TEXT = {
   artistJobTitle: {
     fr: 'Tatoueuse',
     en: 'Tattoo artist',
+  },
+  guestSpot: {
+    fr: 'Guest spot de {name} au salon {shop}',
+    en: '{name} guest spot at {shop}',
   },
 } satisfies Record<string, LocalizedText>;
 
@@ -82,19 +85,3 @@ export const SEO_KEYWORDS: Record<Locale, string[]> = {
 
 /** Social image: 1200 × 630, in `public/`. */
 export const OG_IMAGE = { url: '/og-image.jpg', width: 1200, height: 630 };
-
-export const STUDIO_PLACE = {
-  region: 'Morbihan',
-  regionCode: 'FR-56',
-  // 6 rue de Turenne, from Google Maps.
-  latitude: 47.74988,
-  longitude: -3.360671,
-  foundingDate: '2024-08',
-  /** Towns of the Lorient area, for `areaServed`. */
-  areaServed: ['Lorient', 'Lanester', 'Ploemeur', 'Larmor-Plage', 'Quéven', 'Hennebont', 'Morbihan', 'Bretagne'],
-  openingHours: {
-    days: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    opens: '11:00',
-    closes: '18:00',
-  },
-} as const;

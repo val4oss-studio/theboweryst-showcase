@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
-import type { ArtistEntity } from '@/domain/entities/artistEntity';
+import type { Artist } from '@/content/artists';
 import type { InstagramFeed } from '@/content/instagram';
 import { getInstagramFeed } from '@/content/instagramFeed';
 import { GallerySectionClient } from './GallerySectionClient';
 
 interface GalleryContentProps {
-  artists: ArtistEntity[];
+  artists: Artist[];
 }
 
 /**
@@ -14,10 +14,10 @@ interface GalleryContentProps {
  */
 async function GalleryContent({ artists }: GalleryContentProps) {
   const feeds = await Promise.all(
-    artists.map((artist) => getInstagramFeed(artist.instagramName))
+    artists.map((artist) => getInstagramFeed(artist.instagram))
   );
 
-  const feedsByArtistId: Record<number, InstagramFeed | null> = {};
+  const feedsByArtistId: Record<string, InstagramFeed | null> = {};
   artists.forEach((artist, index) => {
     feedsByArtistId[artist.id] = feeds[index];
   });
@@ -52,7 +52,7 @@ function GallerySkeleton() {
 
 interface GallerySectionProps {
   id: string;
-  artists: ArtistEntity[];
+  artists: Artist[];
 }
 
 export function GallerySection({ id, artists }: GallerySectionProps) {

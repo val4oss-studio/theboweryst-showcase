@@ -3,17 +3,15 @@
 import { useI18n } from "@/app/i18n/provider";
 import { MapPin } from "lucide-react";
 import { FaInstagram, FaFacebook } from "react-icons/fa";
-import type { ShopEntity } from "@/domain/entities/shopEntity";
-import type {ArtistEntity} from "@/domain/entities/artistEntity";
-import { getArtistInstagramUrl } from "@/domain/entities/artistEntity";
+import { getArtistInstagramUrl, type Artist } from "@/content/artists";
+import { shop } from "@/content/shop";
 
 interface ContactSectionProps {
   id: string;
-  shop: ShopEntity;
-  artists: ArtistEntity[];
+  artists: Artist[];
 }
 
-export function ContactSection({ id, shop, artists }: ContactSectionProps) {
+export function ContactSection({ id, artists }: ContactSectionProps) {
   const { t, locale } = useI18n();
 
   return (
@@ -79,7 +77,7 @@ export function ContactSection({ id, shop, artists }: ContactSectionProps) {
               if (!igUrl) return null;
               return (
                 <a
-                  key={artist.username}
+                  key={artist.name}
                   href={igUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -88,8 +86,8 @@ export function ContactSection({ id, shop, artists }: ContactSectionProps) {
                   <div className="contact-card-icon">
                     <FaInstagram size={32} />
                   </div>
-                  <h3 className="contact-card-title">{artist.username}</h3>
-                  <p className="contact-card-text">@{artist.instagramName}</p>
+                  <h3 className="contact-card-title">{artist.name}</h3>
+                  <p className="contact-card-text">@{artist.instagram}</p>
                   <div className="contact-card-action">
                     {t.contact.followOn} Instagram
                   </div>

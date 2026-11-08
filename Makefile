@@ -7,7 +7,6 @@ REGISTRY    := ghcr.io/val4oss-studio
 IMG         ?= $(IMG_NAME)
 CTN_NAME    := theboweryst-showcase
 PORT        := 3000
-VOL_DB      := $(BUILD_D)/database
 
 # -- Targets --------------------------------------------------
 .PHONY: help build test run stop clean logs dev
@@ -32,18 +31,16 @@ build: ## Build image with podman and save logs and archive in build dir
 test: ## Run Nextjs tests
 	npm run test
 
-run: ## Run container. Use IMG= to override image (e.g. IMG=$(REGISTRY)/$(IMG_NAME):0.2.0)
+run: ## Run container with the VAL4OSS_MEDIA_* of the shell. Use IMG= to override image (e.g. IMG=$(REGISTRY)/$(IMG_NAME):0.2.0)
 	@if [[ "$(IMG)" == "$(IMG_NAME)" ]] && ! podman image exists $(IMG_NAME); then \
 	    echo "Image $(IMG_NAME) not found, run 'make build' first"; \
 	    exit 1; \
 	fi
-	@mkdir -p $(VOL_DB)
-	podman unshare chown -R 1001:1001 $(VOL_DB)
 	podman run -d \
 		--name $(CTN_NAME) \
 		-p $(PORT):$(PORT) \
 		--replace \
-		-v $(CURDIR)/$(VOL_DB):/app/database:Z \
+		-e VAL4OSS_MEDIA_URL -e VAL4OSS_MEDIA_KEY -e VAL4OSS_MEDIA_WEBHOOK_SECRET \
 		$(IMG)
 	@echo "✅ Site Available on http://localhost:$(PORT)"
 
@@ -61,7 +58,6 @@ logs: ## Print log container
 
 clean: stop ## Remove image, build artifacts and volumes
 	@rm -f $(BUILD_D)/$(IMG_NAME).tar $(BUILD_D)/*.log
-	@[ -d "$(VOL_DB)" ] && podman unshare rm -rf "$(VOL_DB)" || true
 	@if podman image exists $(IMG_NAME); then \
 	    podman rmi $(IMG_NAME); \
 	fi

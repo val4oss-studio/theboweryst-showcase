@@ -29,7 +29,6 @@
 ## Stack
 
 * [![Next.js][nextjs-badge]][nextjs-url]
-* [![Sqlite3][sqlite-badge]][sqlite-url]
 * [![tailwind css][tailwind-badge]][tailwind-url]
 * [![typescript][typescript-badge]][typescript-url]
 
@@ -64,49 +63,42 @@ make clean
 
 ```bash
 npm install
-npm run db:migrate   # Create tables
-npm run db:seed      # Seed initial data
 VAL4OSS_MEDIA_URL=https://media.val4oss.com VAL4OSS_MEDIA_KEY=vm_... \
   npm run dev        # http://localhost:3000
 ```
 
-## Management Scripts (CLI)
+## Content
 
-### Database
+The studio, its artists and its guest spots are versioned TypeScript files
+(no database): edit them, commit, build a new image.
 
-| Command | Description |
+| Change | File |
 |---|---|
-| `npm run db:migrate` | Run migrations |
-| `npm run db:seed` | Seed the database with initial data |
-| `npm run db:reset` | Drop and recreate the database |
+| Address, hours, socials, description | `src/content/shop.ts` |
+| Resident artists | `src/content/artists.ts` + photo in `public/artists/` |
+| Guest spots | `src/content/guests.ts` + photo in `public/artists/guests/` |
 
-### Shop (studio information)
+A guest has `from` and `to` dates (`YYYY-MM-DD`): her card shows from the
+deployment until her last day, then disappears by itself.
 
-| Command | Description |
-|---|---|
-| `npm run shop:get` | Display shop information |
-| `npm run shop:set <args>` | Initialize the shop |
-| `npm run shop:update <field> [locale] <value>` | Update a field |
-
-Examples:
-```bash
-npm run shop:update name "The Bower Yst"
-npm run shop:update description fr "Un studio de tatouage..."
-npm run shop:update description en "A tattoo studio..."
+```ts
+// src/content/guests.ts
+{
+  id: 'jane',
+  name: 'Jane',
+  instagram: 'jane_tattoo',
+  bio: { fr: 'Blackwork et ornemental.', en: 'Blackwork and ornamental.' },
+  photo: '/artists/guests/jane.jpeg',
+  from: '2026-12-01',
+  to: '2026-12-14',
+}
 ```
 
-### Artists
-
-| Command | Description |
-|---|---|
-| `npm run artist:list` | List all artists |
-| `npm run artist:get <id>` | Show artist details |
-| `npm run artist:add <username> <instagramId> <bio_fr> <bio_en> [photo]` | Add an artist |
-| `npm run artist:remove <id>` | Remove an artist |
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Instagram gallery (val4oss-media)
 
-The gallery shows the Instagram posts of each artist (their `instagramId`),
+The gallery shows the Instagram posts of each resident (their `instagram`),
 served by [val4oss-media](https://media.val4oss.com). The site stores no
 post: it reads the feed server-side and the images through `/_next/image`.
 
@@ -136,8 +128,6 @@ After a change of the API contract: `npm run generate:api`.
 [issues-url]: https://github.com/val4oss-studio/theboweryst-showcase/issues
 [license-shield]: https://img.shields.io/github/license/val4oss-studio/theboweryst-showcase.svg?style=for-the-badge
 [license-url]: https://github.com/val4oss-studio/theboweryst-showcase/blob/main/LICENSE
-[sqlite-badge]: https://img.shields.io/badge/better_SQLite_V3-003B57?style=for-the-badge&logo=sqlite&logoColor=white
-[sqlite-url]: https://www.npmjs.com/package/better-sqlite3
 [nextjs-badge]: https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [nextjs-url]: https://vercel.com/geist/brands#next-js
 [tailwind-badge]: https://img.shields.io/badge/tailwind_css_V4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white

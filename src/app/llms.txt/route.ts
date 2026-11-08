@@ -1,35 +1,41 @@
-import { SITE_URL, STUDIO_PLACE, localeUrl } from '@/config/seo';
-import { getArtistInstagramUrl } from '@/domain/entities/artistEntity';
-import { getAllArtists } from '@/domain/services/artistService';
-import { getShop } from '@/domain/services/shopService';
+import { SITE_URL, localeUrl } from '@/config/seo';
+import { artists, getArtistInstagramUrl, type Artist } from '@/content/artists';
+import { formatGuestDates, getActiveGuests } from '@/content/guests';
+import { getShopAddress, shop } from '@/content/shop';
 
 /**
  * `/llms.txt`: plain Markdown summary of the studio for AI agents
- * (https://llmstxt.org), built from the database like the home page.
+ * (https://llmstxt.org), from the same content as the home page.
+ * Regenerated hourly: guest spots come and go with the date.
  */
 export const revalidate = 3600;
 
-export function GET(): Response {
-  const shop = getShop();
-  const artists = getAllArtists();
-  if (!shop) return new Response(null, { status: 404 });
+type Locale = 'fr' | 'en';
 
-  const address = `${shop.addressStreet}, ${shop.addressZip} ${shop.addressCity}`;
-  const artistLines = (locale: 'fr' | 'en', job: string) =>
-    artists.map((artist) => {
-      const instagram = getArtistInstagramUrl(artist);
-      const handle = artist.instagramName ? ` (@${artist.instagramName})` : '';
-      const link = instagram ? ` — Instagram${locale === 'fr' ? ' :' : ':'} ${instagram}` : '';
-      return `- **${artist.username}**${handle}, ${job} ${shop.name}${link}\n  ${artist.bio[locale]}`;
-    }).join('\n');
+const COLON: Record<Locale, string> = { fr: ' :', en: ':' };
+
+function artistLine(artist: Artist, locale: Locale, role: string): string {
+  return `- **${artist.name}** (@${artist.instagram}), ${role} — Instagram${COLON[locale]} ${getArtistInstagramUrl(artist)}\n  ${artist.bio[locale]}`;
+}
+
+export function GET(): Response {
+  const guests = getActiveGuests();
+  const address = `${getShopAddress()}, France`;
+
+  const guestSection = (locale: Locale, title: string, role: string) =>
+    guests.length === 0
+      ? ''
+      : `\n## ${title}\n\n${guests
+          .map((guest) => artistLine(guest, locale, `${role} (${formatGuestDates(guest, locale)})`))
+          .join('\n')}\n`;
 
   const body = `# ${shop.name}
 
-> ${shop.name} (aussi écrit « The Boweryst ») est un salon de tatouage à ${shop.addressCity}, dans le ${STUDIO_PLACE.region} (56), en Bretagne, ouvert en août 2024. ${artists.length} tatoueuses y travaillent : ${artists.map((a) => a.username).join(', ')}.
+> ${shop.name} (aussi écrit « ${shop.alternateNames[0]} ») est un salon de tatouage à ${shop.addressCity}, dans le ${shop.addressRegion} (56), en Bretagne, ouvert en août 2024. ${artists.length} tatoueuses y travaillent : ${artists.map((a) => a.name).join(', ')}.
 
 ## Le salon
 
-- Adresse : ${address}, France
+- Adresse : ${address}
 - Horaires : ${shop.scheduleWeekdays.fr} ; ${shop.scheduleWeekend.fr}
 - Prise de rendez-vous et contact : par message Instagram au salon ou à la tatoueuse
 - Instagram : ${shop.instagramUrl}
@@ -39,14 +45,14 @@ export function GET(): Response {
 
 ## Les tatoueuses du salon
 
-${artistLines('fr', 'tatoueuse au salon')}
-
+${artists.map((artist) => artistLine(artist, 'fr', `tatoueuse au salon ${shop.name}`)).join('\n')}
+${guestSection('fr', 'Tatoueuses en guest', `en guest au salon ${shop.name}`)}
 ## In English
 
-${shop.name} is a tattoo studio in ${shop.addressCity}, Morbihan, Brittany, France, opened in August 2024, with ${artists.length} resident tattoo artists. Address: ${address}, France. Hours: ${shop.scheduleWeekdays.en}; ${shop.scheduleWeekend.en}. Bookings by Instagram message. English site: ${localeUrl('en')}
+${shop.name} is a tattoo studio in ${shop.addressCity}, Morbihan, Brittany, France, opened in August 2024, with ${artists.length} resident tattoo artists. Address: ${address}. Hours: ${shop.scheduleWeekdays.en}; ${shop.scheduleWeekend.en}. Bookings by Instagram message. English site: ${localeUrl('en')}
 
-${artistLines('en', 'tattoo artist at')}
-
+${artists.map((artist) => artistLine(artist, 'en', `tattoo artist at ${shop.name}`)).join('\n')}
+${guestSection('en', 'Guest artists', `guest artist at ${shop.name}`)}
 ## Pages
 
 - [Accueil (fr)](${localeUrl('fr')}): présentation, tatoueuses, galerie, contact

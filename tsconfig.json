@@ -20,10 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/app/*": ["./src/app/*"],
-      "@/data/*": ["./src/data/*"],
-      "@/domain/*": ["./src/domain/*"],
-      "@/validators/*": ["./src/validators/*"]
+      "@/app/*": ["./src/app/*"]
     }
   },
   "include": [

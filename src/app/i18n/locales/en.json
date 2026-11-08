@@ -37,7 +37,11 @@
     },
     "intro": "The three tattoo artists of {name} in Lorient: {artists}.",
     "and": "and",
-    "cardAlt": "{name}, tattoo artist at {shop} in Lorient"
+    "cardAlt": "{name}, tattoo artist at {shop} in Lorient",
+    "guest": "Guest",
+    "guestDates": "Guest spot: {dates}",
+    "guestAlt": "{name}, guest tattoo artist at {shop} in Lorient",
+    "guestIntro": "Guest artists at the studio: {guests}."
   },
   "gallery": {
     "title": "Gallery",
