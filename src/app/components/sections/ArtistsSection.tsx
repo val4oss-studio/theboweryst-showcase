@@ -35,14 +35,6 @@ export function ArtistsSection({ id, artists, guests }: ArtistsSectionProps) {
       <div className="section-container">
         <div className="section-header">
           <h2 className="section-title">{t.artists.title}</h2>
-          <p className="section-intro">
-            {t.artists.intro
-              .replace('{name}', shop.name)
-              .replace('{artists}', artistList)}
-            {guests.length > 0 && (
-              <> {t.artists.guestIntro.replace('{guests}', guestList)}</>
-            )}
-          </p>
         </div>
         <Image
           src="/theboweryst-yellow-flower.png"
@@ -52,6 +44,14 @@ export function ArtistsSection({ id, artists, guests }: ArtistsSectionProps) {
           className="artists-section-flower"
           aria-hidden="true"
         />
+        <p className="section-intro">
+          {t.artists.intro
+            .replace('{name}', shop.name)
+            .replace('{artists}', artistList)}
+          {guests.length > 0 && (
+            <> {t.artists.guestIntro.replace('{guests}', guestList)}</>
+          )}
+        </p>
         <div className="artists-grid">
           {artists.map((artist, index) => (
             <ArtistCard key={artist.id} artist={artist} priority={index === 0} />
