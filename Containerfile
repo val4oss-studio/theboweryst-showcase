@@ -73,6 +73,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/public/logo.jpg ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst-logo.png ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/default-avatar.jpg ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/robots.txt ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public/icon-192.png ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public/icon-512.png ./public
 COPY --from=builder --chown=nextjs:nodejs /app/public/theboweryst_background_web.webm ./public
 
 # Create necessary directories and set permissions
