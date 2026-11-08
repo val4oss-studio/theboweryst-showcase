@@ -3,6 +3,5 @@ export { Footer } from './Footer';
 export { InstagramCard } from './InstagramCard';
 export { LanguageToggle } from './LanguageToggle';
 export { Navbar } from './Navbar';
-export { SnapScroll } from './SnapScroll';
 export { ThemeToggle } from './ThemeToggle';
 export { VideoBackground } from './VideoBackground';

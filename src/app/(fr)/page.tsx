@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { Navbar, Footer, SnapScroll } from "@/app/components/layout";
+import { Navbar, Footer } from "@/app/components/layout";
 import {
   HeroSection,
   AboutSection,
@@ -27,7 +27,6 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <SnapScroll />
       <HeroSection id={SECTION_IDS.home} shop={shop}/>
       <AboutSection id={SECTION_IDS.about} />
       <ArtistsSection id={SECTION_IDS.artists} artists={artists}/>
